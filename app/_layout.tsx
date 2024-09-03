@@ -31,6 +31,10 @@ export default function RootLayout() {
                 title: 'Devices',
             }}
           />
+          <Stack.Screen name="homepage" options={{
+                title: 'Homepage',
+            }}
+          />
           <Stack.Screen name="+not-found" />
         </Stack>
       </ThemeProvider>

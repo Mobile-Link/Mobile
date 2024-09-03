@@ -1,6 +1,8 @@
 import { useSignalR } from "@/hooks/signalR";
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { router } from "expo-router";
 
 const LoginScreen = () => {
   const [username, setUsername] = useState('');
@@ -11,20 +13,21 @@ const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
 
-  const { connection } = useSignalR();
+  // const { connection } = useSignalR(); 
 
   const handleLogin = () => {
-    connection.invoke('login', username, password)
-      .then((result) => {
-        if (result.success) {
-          // Login bem-sucedido, redirecionar para a próxima tela
-        } else {
-          setError(result.error);
-        }
-      })
-      .catch((error) => {
-        setError(error.message);
-      });
+    router.replace('/homepage');
+    // connection.invoke('login', username, password)
+    //   .then((result) => {
+    //     if (result.success) {
+    //       navigation.navigate('Homepage'); // Mover para a homepage após login bem-sucedido
+    //     } else {
+    //       setError(result.error);
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     setError(error.message);
+    //   });
   };
 
   const handleCreateAccount = () => {
@@ -32,17 +35,17 @@ const LoginScreen = () => {
   };
 
   const handleCreateAccountSubmit = () => {
-    connection.invoke('createAccount', nome, email, senha)
-      .then((result) => {
-        if (result.success) {
-          // Conta criada com sucesso, redirecionar para a próxima tela
-        } else {
-          setError(result.error);
-        }
-      })
-      .catch((error) => {
-        setError(error.message);
-      });
+    // connection.invoke('createAccount', nome, email, senha)
+    //   .then((result) => {
+    //     if (result.success) {
+    //       navigation.navigate('Homepage'); // Mover para a homepage após criar conta
+    //     } else {
+    //       setError(result.error);
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     setError(error.message);
+    //   });
   };
 
   return (
