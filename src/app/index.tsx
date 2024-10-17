@@ -9,7 +9,7 @@ const Index = () => {
     const checkFirstAccess = async () => {
       try {
         const isFirstAccess = await AsyncStorage.getItem('isFirstAccess'); // Remover parêntese extra
-
+        //android keychange
         if (isFirstAccess === null) {
           // Primeiro acesso, redireciona para a tela de cadastro
           router.replace('/createAccountScreen');

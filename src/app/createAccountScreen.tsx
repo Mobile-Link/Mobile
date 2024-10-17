@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button } from 'react-native';
 import { router } from "expo-router";
+import { createAccount } from '../api/auth.service';
 
 const CreateAccountScreen = () => {
   const [username, setusername] = useState('');
@@ -12,7 +13,7 @@ const CreateAccountScreen = () => {
     createAccount(email, password, username)
       .then((result) => {
         if (result.status == 200) {
-          router.replace('/homepage'); // Mover para a homepage após criar conta
+          router.replace('/codeAccountScreen'); // Mover para a codeAccountScreen após criar conta
         } else {
           setError(result.data);
         }

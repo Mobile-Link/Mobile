@@ -15,5 +15,12 @@ const createAccount = (email, password,  username) => {
     })
 }
 
+const codeAccount =  (code) => {
+    return axios.post('http://localhost:5000/api/Auth/code', {
+        code
+    })
+}
+
 export {login};
 export {createAccount};
+export {codeAccount};
