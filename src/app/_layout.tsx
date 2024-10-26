@@ -5,9 +5,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
-import { SignalRProvider } from '@/hooks/signalR';
-import { FontAwesome } from '@expo/vector-icons';
+import { useColorScheme } from '@/src/hooks/useColorScheme';
+import { SignalRProvider } from '@/src/hooks/signalR';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -15,7 +14,7 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    SpaceMono: require('../../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
   useEffect(() => {
@@ -32,7 +31,19 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen name="homepage" options={{
-                title: 'Homepage',
+                title: 'Home',
+            }}
+          />
+          <Stack.Screen name="loginScreen" options={{
+                title: 'Login',
+            }}
+          />
+          <Stack.Screen name="createAccountScreen" options={{
+                title: 'CreateAcocount',
+            }}
+          />
+          <Stack.Screen name="tokenScreen" options={{
+            title: 'Token',
             }}
           />
           <Stack.Screen name="+not-found" />

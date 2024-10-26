@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import * as DocumentPicker from 'expo-document-picker';
-import { Feather } from '@expo/vector-icons';
 
 interface Perfil {
   id: number;
@@ -32,8 +30,7 @@ const DeviceFiles = ({ route }: DeviceFilesProps) => {
     const deviceId = route.params.deviceId;
 };
 
-const HomeScreen = () => {
-  const navigation = useNavigation();
+const Homepage = () => {
   const [perfil, setPerfil] = useState<Perfil | null>(null);
   const [dispositivos, setDispositivos] = useState<Dispositivo[]>([]);
 
@@ -146,4 +143,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default HomeScreen;
+export default Homepage;
