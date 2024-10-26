@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button } from 'react-native';
 import { router } from "expo-router";
 import { login } from '../api/auth.service';
+import *  as SecureStore from 'expo-secure-store';
 
 const LoginScreen = () => {
   const [emailOrUsername, setemailOrUsername] = useState('');

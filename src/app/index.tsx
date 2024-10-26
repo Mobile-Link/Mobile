@@ -8,17 +8,18 @@ const Index = () => {
   useEffect(() => {
     const checkFirstAccess = async () => {
       try {
-        const isFirstAccess = await AsyncStorage.getItem('isFirstAccess'); // Remover parêntese extra
-        //android keychange
-        if (isFirstAccess === null) {
-          // Primeiro acesso, redireciona para a tela de cadastro
-          router.replace('/createAccountScreen');
-          // Após redirecionar, você pode definir que não é mais o primeiro acesso
-          await AsyncStorage.setItem('isFirstAccess', 'false');
-        } else {
-          // Não é o primeiro acesso, redireciona para a tela de login
-          router.replace('/loginScreen');
-        }
+        // TODO getSecureStoreProvider
+        // const Token = await SecureStore.getItemAsync("Token"); // Remover parêntese extra
+        // //android keychange
+        // if (Token == null ) {
+        //   // Primeiro acesso, redireciona para a tela de cadastro
+        //   router.replace('/loginScreen');
+        //   // Após redirecionar, você pode definir que não é mais o primeiro acesso  
+        //   await AsyncStorage.setItem('Token', 'false');
+        // } else {
+        //   // Não é o primeiro acesso, redireciona para a tela de login
+        //   router.replace('/homepage');
+        // }
       } catch (error) {
         console.error(error);
       }
