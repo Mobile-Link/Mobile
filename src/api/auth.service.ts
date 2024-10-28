@@ -1,13 +1,20 @@
 import axios from "axios";
 
-const login  = (emailOrUsername, password) => {
+const login  = (emailOrUsername: string , password: string) => {
     return axios.post ('http://localhost:5000/api/Auth/login', {
         emailOrUsername,
         password
     })
 }
 
-const createAccount = (email, password,  username) => {
+const validateCredentials = (emailOrUsername: string, password: string) => {
+    return axios.post('http://localhost:5000/api/Auth/validateCredentials', {
+        emailOrUsername,
+        password
+    });
+}
+
+const createAccount = (email: string, password: string,  username: string) => {
     return axios.post('http://localhost:5000/api/Auth/register', {
         email,
         password,
@@ -15,12 +22,28 @@ const createAccount = (email, password,  username) => {
     })
 }
 
-const codeAccount =  (code) => {
-    return axios.post('http://localhost:5000/api/Auth/code', {
+const sendCode = (email: string) => {
+    return axios.post('http://localhost:5000/api/Auth/sendCode', {
+        email
+    })
+}
+
+const validateCode = (email: string, code: string) => {
+    return axios.post('http://localhost:5000/api/Auth/verifyCode', {
+        email,
         code
+    })
+}
+
+const register = (email: string, password: string, username: string) => {
+    return axios.post('http://localhost:5000/api/Auth/register', {
+        email,
+        password,
+        username,
+        
     })
 }
 
 export {login};
 export {createAccount};
-export {codeAccount};
+export {validateCredentials};

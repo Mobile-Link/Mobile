@@ -1,38 +1,22 @@
-import React, { useEffect } from 'react';
-import { View, Text } from 'react-native';
+import React, {useEffect} from 'react';
+import {View, Text} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router } from "expo-router";
+import {router} from "expo-router";
+import {SecureStoreProvider} from "@/src/providers/SecureStoreProvider";
+import Auth from "@/src/app/auth";
+import {SignalRProvider} from "@/src/hooks/signalR";
 
 const Index = () => {
 
-  useEffect(() => {
-    const checkFirstAccess = async () => {
-      try {
-        // TODO getSecureStoreProvider
-        // const Token = await SecureStore.getItemAsync("Token"); // Remover parêntese extra
-        // //android keychange
-        // if (Token == null ) {
-        //   // Primeiro acesso, redireciona para a tela de cadastro
-        //   router.replace('/loginScreen');
-        //   // Após redirecionar, você pode definir que não é mais o primeiro acesso  
-        //   await AsyncStorage.setItem('Token', 'false');
-        // } else {
-        //   // Não é o primeiro acesso, redireciona para a tela de login
-        //   router.replace('/homepage');
-        // }
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    checkFirstAccess();
-  }, [router]);
-
-  return (
-    <View>
-      <Text>Carregando...</Text>
-    </View>
-  );
+    return (
+        <SecureStoreProvider>
+            <SignalRProvider>
+                <Auth>
+                    <Text>Conectado</Text>
+                </Auth>
+            </SignalRProvider>
+        </SecureStoreProvider>
+    );
 };
 
 export default Index;

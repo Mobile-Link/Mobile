@@ -2,9 +2,9 @@ import { createContext, JSX, useContext, useEffect, useState } from "react";
 import { SecureStoreType } from "../models/types/SecureStoreType.js";
 import { SecureStoreActions } from "../models/types/SecureStoreActions.js";
 import * as SecureStore from 'expo-secure-store';
-import { SecureStoreProvider } from "../models/types/SecureStoreProvider.js";
+import { SecureStoreProviderType } from "../models/types/SecureStoreProviderType.js";
 
-const SecureStoreContext = createContext<SecureStoreProvider | null>(null);
+const SecureStoreContext = createContext<SecureStoreProviderType | null>(null);
 
 function SecureStoreProvider({ children }: { children: JSX.Element }) {
 

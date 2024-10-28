@@ -1,7 +1,7 @@
 import { SecureStoreActions } from "./SecureStoreActions";
 import { SecureStoreType } from "./SecureStoreType";
 
-export type SecureStoreProvider ={
+export type SecureStoreProviderType ={
     stored: SecureStoreType,
     actions: SecureStoreActions,
 };

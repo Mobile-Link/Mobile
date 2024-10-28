@@ -2,8 +2,9 @@ import React, {useState, useEffect, Context, useContext} from 'react';
 import {createContext} from 'react';
 import * as signalR from '@microsoft/signalr';
 import {HubConnection} from "@microsoft/signalr";
+import {SignalRProviderType} from "@/src/models/types/SignalRProviderType";
 
-export const SignalRContext = createContext < HubConnection | undefined >(undefined);
+export const SignalRContext = createContext < SignalRProviderType | undefined >(undefined);
 
 export const useSignalR = () => {
     const connection = useContext(SignalRContext);
@@ -35,7 +36,10 @@ export const SignalRProvider = ({children}: {children: React.ReactNode}) => {
 
     }, []);
 
-    useEffect(() => {
+    const connectAccount = () => {
+        
+        console.log('Conectando...'+ connection);
+        
         if(connection){
             const connect = async () => {
                 try {
@@ -82,7 +86,7 @@ export const SignalRProvider = ({children}: {children: React.ReactNode}) => {
             };
             connect();
         }
-    }, [connection]);
+    };
 
     useEffect(() => {
         if (connection){
@@ -114,7 +118,7 @@ export const SignalRProvider = ({children}: {children: React.ReactNode}) => {
     };
     
     return (
-        <SignalRContext.Provider value={connection}>
+        <SignalRContext.Provider value={{connection, connectAccount}}>
             {children}
         </SignalRContext.Provider>
     );

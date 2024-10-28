@@ -42,10 +42,10 @@ export default function RootLayout() {
                 title: 'CreateAcocount',
             }}
           />
-          <Stack.Screen name="tokenScreen" options={{
-            title: 'Token',
-            }}
-          />
+          {/*<Stack.Screen name="tokenScreen" options={{*/}
+          {/*  title: 'Token',*/}
+          {/*  }}*/}
+          {/*/>*/}
           <Stack.Screen name="+not-found" />
         </Stack>
       </ThemeProvider>
