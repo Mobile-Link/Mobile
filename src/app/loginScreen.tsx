@@ -2,49 +2,48 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button } from 'react-native';
 import { router } from "expo-router";
 import {login, validateCredentials} from '../api/auth.service';
-import *  as SecureStore from 'expo-secure-store';
-import {useSignalR} from "@/src/hooks/signalR";
 import {useSecureStore} from "@/src/providers/SecureStoreProvider";
-import {awaitExpression} from "@babel/types";
 
-const LoginScreen = () => {
+type ErrorState = {
+    error: string;
+}
+
+const LoginScreen = ({children}: {children: React.ReactNode}) => {
   const [emailOrUsername, setemailOrUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<ErrorState | null>(null);
+
   const{actions} = useSecureStore();
-  
   const submitLogin = async () => {
-      actions.getStoredIdDevice().then((idDevice) => {
+      try{
+          const idDevice = await actions.getStoredIdDevice();
+          
           if(idDevice == null){
-              return validateCredentials(emailOrUsername, password).then((result) => {
-                    if(result.status == 200){
-                        // router.replace('/emailValidationScreen');
-                    }
-              });
+              const response = await validateCredentials(emailOrUsername, password);
+              
+              if (response.status === 200) {
+                  router.replace(`/emailValidationScreen?email=${emailOrUsername}&password=${password}&from=login`);
+              }else{
+                    setError({error: 'Credenciais inválidas' });
+              }   
           }
           
-      });
-      
-      
-      
+          if(idDevice != null){
+              const response = await login(emailOrUsername, password);
+              
+              if(response.status === 200){
+                  const token = response.data.token;
+                  actions.setToken(token);
+                  router.replace('/loginCreateDeviceScreen');
+              }else{
+                  setError({error: 'Credenciais inválidas' });
+              }
+          }
+      }catch (error){
+            setError({error: 'Credenciais inválidas',  });
+      }
       
   }
-  
-  
-  
-  // const handleLogin = () => {
-  //   login(emailOrUsername, password)
-  //     .then((result) => {
-  //       if (result.status == 200) {
-  //         router.replace('/homepage'); // Mover para a homepage após login bem-sucedido
-  //       } else {
-  //         setError(result.data);
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       setError(error.message);
-  //     });
-  // };
 
   return (
     <View>
@@ -60,8 +59,8 @@ const LoginScreen = () => {
         value={password}
         onChangeText={(text) => setPassword(text)}
       />
-      {error && <Text style={{ color: 'red' }}>{error}</Text>}
-      <Button title="Entrar" onPress={validateC} />
+      {error && <Text style={{ color: 'red' }}>{error.error}</Text>}
+      <Button title="Entrar" onPress={submitLogin} />
       <Button title="Criar Conta" onPress={() => router.replace('/createAccountScreen')} />
     </View>
   );

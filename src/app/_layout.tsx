@@ -38,6 +38,12 @@ export default function RootLayout() {
                 title: 'Login',
             }}
           />
+            
+        <Stack.Screen name="emailValidationScreen" options={{
+                title: 'EmailValidation',
+            }}
+        />
+            
           <Stack.Screen name="createAccountScreen" options={{
                 title: 'CreateAcocount',
             }}
