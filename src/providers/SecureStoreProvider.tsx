@@ -8,7 +8,7 @@ const SecureStoreContext = createContext<SecureStoreProviderType | null>(null);
 
 function SecureStoreProvider({ children }: { children: JSX.Element }) {
 
-  const [stored, setStored] = useState<SecureStoreType>({idDevice: null, token: null});
+  const [stored, setStored] = useState<SecureStoreType>({idDevice: null, token: null, username: null});
   
   const actions: SecureStoreActions = {
     setToken(token: string) {
@@ -35,6 +35,13 @@ function SecureStoreProvider({ children }: { children: JSX.Element }) {
         }).catch(()=>resolve(null))
       })
     },
+    setUsername(username: string) {
+      SecureStore.setItem("username", username);
+      setStored((prevState:SecureStoreType) => {return{...prevState, username}});
+    },
+    getUsername() {
+      return stored.username;
+    }
   };
 
   return (
@@ -50,4 +57,7 @@ const useSecureStore = () => {
   }
   return context;
 }
+
+
+
 export { SecureStoreProvider, useSecureStore };

@@ -5,4 +5,6 @@ export type SecureStoreActions = {
     setIdDevice: (idDevice:number)=> void;
     getIdDevice: ()=> number | null;
     getStoredIdDevice: () => Promise<number | null>;
+    setUsername: (username:string)=> void;
+    getUsername: ()=> string | null;
 };
