@@ -5,15 +5,18 @@ import {router} from "expo-router";
 import {SecureStoreProvider} from "@/src/providers/SecureStoreProvider";
 import Auth from "@/src/app/auth";
 import {SignalRProvider} from "@/src/hooks/signalR";
+import LoginScreen from "@/src/app/loginScreen";
 
 const Index = () => {
 
     return (
         <SecureStoreProvider>
             <SignalRProvider>
-                <Auth>
-                    <Text>Conectado</Text>
-                </Auth>
+                <LoginScreen>
+                    <Auth>
+                        <Text>Conectado</Text>
+                    </Auth>
+                </LoginScreen>
             </SignalRProvider>
         </SecureStoreProvider>
     );
