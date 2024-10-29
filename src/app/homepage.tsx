@@ -1,15 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
+import  * as FileSystem from 'expo-file-system';
+import {useSecureStore} from "@/src/providers/SecureStoreProvider";
+import axios from 'axios';
+import * as SecureStore from 'expo-secure-store';
+
+axios.interceptors.request.use(
+  async (config) => {
+    const token = await SecureStore.getItemAsync("token")
+    if (token) {
+      config.headers['Authorization'] = 'Bearer ' + token
+    }
+    return config
+  },
+  error => {
+    Promise.reject(error)
+  }
+)
 
 interface Perfil {
-  id: number;
-  nome: string;
+  username: string;
   email: string;
 }
 
 interface Dispositivo {
-  id: number;
   nome: string;
   descricao: string;
 }
@@ -37,25 +52,17 @@ const Homepage = () => {
   useEffect(() => {
     const carregarPerfil = async () => {
       const perfil = {
-        id: 1,
         nome: 'João Doe',
         email: 'joao.doe@example.com',
       };
-      setPerfil(perfil);
     };
 
     const carregarDispositivos = async () => {
       const dispositivos = [
         {
-          id: 1,
           nome: 'Dispositivo 1',
           descricao: 'Descrição do dispositivo 1',
-        },
-        {
-          id: 2,
-          nome: 'Dispositivo 2',
-          descricao: 'Descrição do dispositivo 2',
-        },
+        }
       ];
       setDispositivos(dispositivos);
     };
@@ -71,7 +78,7 @@ const Homepage = () => {
           source={{ uri: 'https://example.com/foto-do-usuario.jpg' }}
           style={styles.fotoperfil}
         />
-        <Text style={styles.nomeperfil}>{perfil?.nome}</Text>
+        <Text style={styles.nomeperfil}>{}</Text>
       </View>
       <View style={styles.conteudo}>
         <Text style={styles.titulo}>Dispositivos Conectados</Text>
@@ -82,7 +89,7 @@ const Homepage = () => {
               <Text style={styles.nomedispositivo}>{item.nome}</Text>
             </TouchableOpacity>
           )}
-          keyExtractor={(item) => String(item.id)}
+          keyExtractor={(item) => String(item)}
         />
       </View>
     </View>
