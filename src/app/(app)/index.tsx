@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import {View, Text, Image, FlatList, TouchableOpacity, StyleSheet, Button} from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
+import {router} from "expo-router";
 
 interface Perfil {
   id: number;
@@ -72,6 +73,7 @@ const Homepage = () => {
           style={styles.fotoperfil}
         />
         <Text style={styles.nomeperfil}>{perfil?.nome}</Text>
+        <Button title="Sair" onPress={() => router.replace('/loginScreen')} />
       </View>
       <View style={styles.conteudo}>
         <Text style={styles.titulo}>Dispositivos Conectados</Text>

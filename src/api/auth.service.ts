@@ -39,7 +39,7 @@ const validateCode = (email: string, code: string) => {
 
 const register = async (email: string, password: string, username: string, code: string, deviceName: string) => {
     try{
-        const {data} = await axios.post('http://localhost:5000/api/Auth/register', {
+        const {data} = await axios.post(`http://localhost:5000/api/Auth/register?email=${email}&code=${code}`, {
             email,
             password,
             username,

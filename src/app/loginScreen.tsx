@@ -34,7 +34,7 @@ const LoginScreen = ({children}: {children: React.ReactNode}) => {
               if(response.status === 200){
                   const token = response.data.token;
                   actions.setToken(token);
-                  router.replace('/loginCreateDeviceScreen');
+                  router.replace('/(app)/');
               }else{
                   setError({error: 'Credenciais inválidas' });
               }

@@ -15,9 +15,8 @@ const CreateAccountScreen = () => {
   const submitCreateAccount = async () => {
       try{
           const response = await sendCode(email);
-          debugger;
             if(response.status === 200){
-                router.replace(`/emailValidationScreen?email=${email}&password=${password}&from=createAccount`);
+                router.replace(`/emailValidationScreen?email=${email}&from=createAccount`);
             }else{
                 setError({error: 'Erro ao criar conta' });
             }

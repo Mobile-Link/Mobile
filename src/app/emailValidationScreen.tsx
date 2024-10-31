@@ -12,12 +12,14 @@ const EmailValidationScreen = () => {
     const [code, setCode] = useState('');
     const [error, setError] = useState<ErrorState | null>(null);
     
-    const submitEmailCreatAccount = async () => {
+    const submitEmailCreateAccount = async () => {
+        
         try{
             const verifyCode = await validateCode(email, code);
             
+            
             if (verifyCode.status === 200){
-                router.replace(`/register`);
+                router.replace(`/register?email=${email}&code=${code}`);
             }
         }catch (error){
             setError({error: 'Código inválido ou expirado' });
@@ -47,7 +49,7 @@ const EmailValidationScreen = () => {
                 onChangeText={(text) => setCode(text)}>
             </TextInput>
             {error && <Text style={{ color: 'red' }}>{error.error}</Text>}
-            {from === 'createAccount' && <Button title="Validar" onPress={submitEmailCreatAccount}/>}
+            {from === 'createAccount' && <Button title="Validar" onPress={submitEmailCreateAccount}/>}
             {from === 'login' && <Button title="Validar" onPress={submitEmailLogin}/>}
         </View>
         

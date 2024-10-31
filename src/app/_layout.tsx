@@ -1,12 +1,13 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import {Slot, Stack} from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/src/hooks/useColorScheme';
 import { SignalRProvider } from '@/src/hooks/signalR';
+import { SecureStoreProvider } from '@/src/providers/SecureStoreProvider';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -18,44 +19,18 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-      SplashScreen.hideAsync();
+      if(loaded){
+          SplashScreen.hideAsync();
+      }
   }, [loaded]);
-
+  
   return (
     <SignalRProvider>
-  
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="index" options={{
-                title: 'Devices',
-            }}
-          />
-          <Stack.Screen name="homepage" options={{
-                title: 'Home',
-            }}
-          />
-          <Stack.Screen name="loginScreen" options={{
-                title: 'Login',
-            }}
-          />
-            
-        <Stack.Screen name="emailValidationScreen" options={{
-                title: 'EmailValidation',
-            }}
-        />
-            
-          <Stack.Screen name="createAccountScreen" options={{
-                title: 'CreateAcocount',
-            }}
-          />
-          {/*<Stack.Screen name="tokenScreen" options={{*/}
-          {/*  title: 'Token',*/}
-          {/*  }}*/}
-          {/*/>*/}
-          <Stack.Screen name="+not-found" />
-        </Stack>
-      </ThemeProvider>
-    
+        <SecureStoreProvider>
+            <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+                <Slot/>
+            </ThemeProvider>
+        </SecureStoreProvider>
     </SignalRProvider>
   );
 }
