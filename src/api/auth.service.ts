@@ -25,7 +25,7 @@ const validateCredentials = (emailOrUsername: string, password: string) => {
 }
 
 const sendCode = (email: string) => {
-    return axios.post(`http://localhost:5000/api/Auth/sendCode?email=${email}`, {
+    return axios.post(`http://localhost:5000/api/Auth/sendCodeNewAccount?email=${email}`, {
         email
     })
 }
