@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {View, Text, Image, FlatList, TouchableOpacity, StyleSheet, Button} from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import {router} from "expo-router";
+import {useSecureStore} from "@/src/providers/SecureStoreProvider";
 
 interface Perfil {
   id: number;
@@ -34,6 +35,7 @@ const DeviceFiles = ({ route }: DeviceFilesProps) => {
 const Homepage = () => {
   const [perfil, setPerfil] = useState<Perfil | null>(null);
   const [dispositivos, setDispositivos] = useState<Dispositivo[]>([]);
+  const { actions } = useSecureStore();
 
   useEffect(() => {
     const carregarPerfil = async () => {
@@ -64,6 +66,11 @@ const Homepage = () => {
     carregarPerfil();
     carregarDispositivos();
   }, []);
+  
+  const logout = () => {
+        actions.deleteToken();
+        router.replace("/loginScreen");
+  }
    
   return (
     <View style={styles.container}>
@@ -73,7 +80,7 @@ const Homepage = () => {
           style={styles.fotoperfil}
         />
         <Text style={styles.nomeperfil}>{perfil?.nome}</Text>
-        <Button title="Sair" onPress={() => router.replace('/loginScreen')} />
+        <Button title="Sair" onPress={() => logout()} />
       </View>
       <View style={styles.conteudo}>
         <Text style={styles.titulo}>Dispositivos Conectados</Text>

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, StatusBar } from 'react-native';
 import { router } from "expo-router";
-import { sendCode } from '../api/auth.service';
-import { Ionicons } from '@expo/vector-icons'; // Lembre-se de instalar expo-vector-icons se ainda não tiver.
+import * as Font from "expo-font";
+import {sendCodeNewAccount} from '../api/auth.service';
+import {AxiosError} from "axios"
 
 type ErrorState = {
     error: string;
@@ -14,14 +15,17 @@ const CreateAccountScreen = () => {
 
     const submitCreateAccount = async () => {
         try{
-            const response = await sendCode(email);
+            const response = await sendCodeNewAccount(email);
             if(response.status === 200){
                 router.replace(`/emailValidationScreen?email=${email}&from=createAccount`);
             }else{
                 setError({error: 'Erro ao criar conta' });
             }
         }catch (error){
-            setError({error: `Erro ao criar ${error}`});
+            const errorStatus = error as AxiosError;
+            if(errorStatus.response?.status === 400){
+                setError({error: 'Email já cadastrado'});
+            }
         }
     }
 
@@ -30,9 +34,6 @@ const CreateAccountScreen = () => {
             <View style={styles.purpleBackground}></View>
 
             <View style={styles.whiteContainer}>
-                <View style={styles.iconContainer}>
-                {/* Ícone de login */}
-            </View>
                 <Text style={styles.title}>Crie sua conta</Text>
 
                 <TextInput
@@ -52,7 +53,7 @@ const CreateAccountScreen = () => {
 
                 <TouchableOpacity onPress={() => router.replace('/loginScreen')}>
                     <Text style={styles.loginText}>
-                        Já possui uma conta? <Text style={styles.loginLink}>Entrar</Text>
+                        Já possui uma conta? <Text style={styles.linkText}>Entrar</Text>
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -92,6 +93,7 @@ const styles = StyleSheet.create({
         color: '#9465CF',
         marginVertical: 20,
         fontWeight: 'bold',
+        fontFamily: 'sans-serif-thin'
     },
     iconContainer: {
         backgroundColor: '#9465CF',
@@ -128,16 +130,16 @@ const styles = StyleSheet.create({
     loginText: {
         fontSize: 14,
         color: '#000',
-        marginTop: 100,
+        marginTop: 180,
         left: 80,
-    },
-    loginLink: {
-        fontWeight: 'bold',
-        color: '#333333',
     },
     error: {
         color: 'red',
         marginTop: 0,
+    },
+    linkText: {
+        color: '#9465CF',
+        fontWeight: 'bold',
     },
 });
 

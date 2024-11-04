@@ -30,11 +30,15 @@ function SecureStoreProvider({ children }: { children: JSX.Element }) {
     },
     getStoredIdDevice() {
       return new Promise<number | null>((resolve, reject) => {        
-        SecureStore.getItemAsync("IdDevice").then((idDevice)=>{
+        SecureStore.getItemAsync("idDevice").then((idDevice)=>{
           resolve(idDevice ? parseInt(idDevice) : null);
         }).catch(()=>resolve(null))
       })
     },
+    deleteToken() {
+        SecureStore.deleteItemAsync("token");
+        setStored((prevState:SecureStoreType) => {return{...prevState, token: null}});
+    }
   };
 
   return (

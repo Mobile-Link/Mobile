@@ -26,9 +26,10 @@ const LoginScreen = () => {
                     setError({ error: 'Credenciais inválidas' });
                 }
             }
-
+            
             if (idDevice != null) {
                 const response = await login(emailOrUsername, password);
+                actions.setToken(response.data.token);
                 if (response.status === 200) {
                     router.replace('/(app)/');
                 } else {
@@ -47,9 +48,6 @@ const LoginScreen = () => {
 
             {/* Container branco arredondado */}
             <View style={styles.whiteContainer}>
-                <View style={styles.iconContainer}>
-                    {/* Ícone de login */}
-                </View>
                 <Text style={styles.title}>Faça seu Login</Text>
 
                 <TextInput
@@ -70,7 +68,7 @@ const LoginScreen = () => {
 
                 {error && <Text style={styles.errorText}>{error.error}</Text>}
 
-                <TouchableOpacity onPress={() => { /* lógica para recuperar senha */ }}>
+                <TouchableOpacity onPress={() => router.replace('/forgotPasswordScreen')}>
                     <Text style={styles.forgotPassword}>Esqueceu sua senha? <Text style={styles.linkText}>Clique Aqui</Text></Text>
                 </TouchableOpacity>
 
@@ -81,7 +79,9 @@ const LoginScreen = () => {
 
             {/* Texto "Criar Conta" posicionado no canto inferior direito */}
             <TouchableOpacity style={styles.registerContainer} onPress={() => router.replace('/createAccountScreen')}>
-                <Text style={styles.registerText}>Não possui uma conta? <Text style={styles.linkText}>Criar Conta</Text></Text>
+                <Text style={styles.registerText}>
+                    Não possui uma conta? <Text style={styles.linkText}>Criar Conta</Text>
+                </Text>
             </TouchableOpacity>
         </View>
     );
@@ -113,22 +113,13 @@ const styles = StyleSheet.create({
         shadowRadius: 10,
         elevation: 10,
     },
-    iconContainer: {
-        backgroundColor: '#9465CF',
-        borderRadius: 25,
-        width: 80,
-        height: 80,
-        justifyContent: 'center',
-        alignItems: 'center',
-        alignSelf: 'center',
-        marginBottom: 20,
-    },
     title: {
         fontSize: 24,
         color: '#9465CF',
         textAlign: 'center',
-        marginBottom: 50,
+        marginVertical: 20,
         fontWeight: 'bold',
+        fontFamily: 'sans-serif-thin'
     },
     input: {
         borderWidth: 1,

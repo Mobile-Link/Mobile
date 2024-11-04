@@ -9,7 +9,6 @@ export default function Layout() {
 
     useEffect(() => {
         actions.getStoredToken().then((token) => {
-            console.log(token)
             
             if (token == null) {
                 router.replace('/loginScreen')

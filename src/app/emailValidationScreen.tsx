@@ -41,10 +41,18 @@ const EmailValidationScreen = () => {
             const verifyCode = await validateCode(email, fullCode);
 
             if (verifyCode.status === 200) {
-                if (from === 'createAccount') {
-                    router.replace(`/register?email=${email}&code=${fullCode}`);
-                } else if (from === 'login') {
-                    router.replace(`/loginCreateDeviceScreen?email=${email}&password=${password}&code=${fullCode}`);
+                switch (from) {
+                    case 'resetPassword':
+                        router.replace(`/updatePasswordScreen?email=${email}&code=${fullCode}`);
+                        break;
+                    case 'createAccount':
+                        router.replace(`/registerScreen?email=${email}&code=${fullCode}&from=createAccount`);
+                        break;
+                    case 'login':
+                        router.replace(`/loginCreateDeviceScreen?email=${email}&password=${password}&code=${fullCode}`);
+                        break;
+                    default:
+                        break;
                 }
             } else {
                 setError({ error: 'Código inválido ou expirado' });
