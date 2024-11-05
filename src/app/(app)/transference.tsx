@@ -2,11 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Button, FlatList, Image, TouchableOpacity } from 'react-native';
 import { useSecureStore } from "@/src/providers/SecureStoreProvider";
+import * as DocumentPicker from 'expo-document-picker';
 import {router} from "expo-router";
 
-const HomeScreen = () => {
+const TransferenceScreen = () => {
     const { actions } = useSecureStore();
 
+    
     const logout = () => {
         actions.deleteToken();
         router.replace("/loginScreen");
@@ -15,9 +17,10 @@ const HomeScreen = () => {
     return (
         <View style={styles.container}>
             <View style={styles.purpleBackground}></View>
-            
+
             <View style={styles.whiteContainer}>
-                <Text style={styles.titulo}>Tela de Ínicio</Text>
+                <Text style={styles.titulo}>Tela de Transferência</Text>
+
             </View>
         </View>
     );
@@ -57,4 +60,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default HomeScreen;
+export default TransferenceScreen;

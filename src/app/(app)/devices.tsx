@@ -1,11 +1,12 @@
 // src/screens/HomeScreen.js
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Button, FlatList, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet} from 'react-native';
 import { useSecureStore } from "@/src/providers/SecureStoreProvider";
 import {router} from "expo-router";
 
-const HomeScreen = () => {
+const DevicesScreen = () => {
     const { actions } = useSecureStore();
+
 
     const logout = () => {
         actions.deleteToken();
@@ -15,9 +16,9 @@ const HomeScreen = () => {
     return (
         <View style={styles.container}>
             <View style={styles.purpleBackground}></View>
-            
+
             <View style={styles.whiteContainer}>
-                <Text style={styles.titulo}>Tela de Ínicio</Text>
+                <Text style={styles.titulo}>Tela de Dispositivos</Text>
             </View>
         </View>
     );
@@ -57,4 +58,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default HomeScreen;
+export default DevicesScreen;
