@@ -31,7 +31,7 @@ const LoginScreen = () => {
                 const response = await login(emailOrUsername, password);
                 actions.setToken(response.data.token);
                 if (response.status === 200) {
-                    router.replace('/(app)/');
+                    router.replace('/(auth)/');
                 } else {
                     setError({ error: 'Credenciais inválidas' });
                 }

@@ -1,21 +1,13 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useSecureStore } from "@/src/providers/SecureStoreProvider";
-import { MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
+import React, {useState} from 'react';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {useSecureStore} from "@/src/providers/SecureStoreProvider";
+import {MaterialCommunityIcons, FontAwesome5} from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router } from "expo-router";
-import Ionicons from "@expo/vector-icons/Ionicons";
+import AccountMenu from "@/src/components/AccountMenu";
 
 const TransferenceScreen = () => {
-    const { actions } = useSecureStore();
+    const {actions} = useSecureStore();
 
-    const logout = () => {
-        actions.deleteToken();
-        router.replace("/loginScreen");
-    };
-
-    // Function to select a file
     const selectFile = async (): Promise<void> => {
         DocumentPicker.getDocumentAsync({
             type: "*/*",
@@ -27,26 +19,27 @@ const TransferenceScreen = () => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.purpleBackground} />
+            <AccountMenu/>
+            <View style={styles.purpleBackground}/>
 
             <View style={styles.whiteContainer}>
                 <View style={styles.centralSection}>
-                    {/* File selection button */}
-                    <TouchableOpacity style={styles.deviceContainer} onPress={selectFile}>
-                        <FontAwesome5 name="mobile-alt" size={150} color="#D1B3FF" />
+                    <TouchableOpacity style={styles.deviceContainer} onPress={() => selectFile()}>
+                        <MaterialCommunityIcons name="cellphone" size={160} color="#D1B3FF"/>
                     </TouchableOpacity>
 
                     <View style={styles.arrowsContainer}>
-                        <MaterialCommunityIcons name="arrow-right" size={50} color="#D1B3FF" />
-                        <MaterialCommunityIcons name="arrow-left" size={50} color="#D1B3FF" />
+                        <MaterialCommunityIcons name="arrow-right" size={50} color="#D1B3FF"/>
+                        <MaterialCommunityIcons name="arrow-left" size={50} color="#D1B3FF"/>
                     </View>
 
                     <TouchableOpacity style={styles.deviceContainer}>
-                        <MaterialCommunityIcons name="monitor" size={150} color="#D1B3FF" />
+                        <MaterialCommunityIcons name="monitor" size={150} color="#D1B3FF"/>
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.floatingButton}>
-                        <Ionicons name="paper-plane-outline" size={40} color={"#FFFFFF"} />
+                        <MaterialCommunityIcons name="send" size={40} color={"#FFFFFF"}
+                                                style={{transform: [{rotate: '-45deg'}]}}/>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -75,7 +68,7 @@ const styles = StyleSheet.create({
         paddingTop: 20,
         marginTop: "25%",
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
+        shadowOffset: {width: 0, height: 4},
         shadowOpacity: 0.3,
         shadowRadius: 10,
         elevation: 10,
@@ -122,6 +115,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         left: 140,
         top: 20,
+        paddingBottom: 5,
+        paddingLeft: 5,
     },
 });
 

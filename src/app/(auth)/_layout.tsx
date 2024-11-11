@@ -60,7 +60,7 @@ export default function Layout() {
                             tabBarLabel: 'Transferir',
                             tabBarIcon: ({ color }) => (
                                 <View style={styles.centerButton}>
-                                    <Ionicons name="paper-plane-outline" size={28} color="white" />
+                                    <Ionicons name="document-outline" size={28} color="white" />
                                 </View>
                             ),
                         }}
@@ -99,7 +99,6 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
         height: 70,
-        position: 'absolute',
         bottom: 0,
         left: 0,
         right: 0,

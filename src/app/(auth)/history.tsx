@@ -1,26 +1,17 @@
-// src/screens/HomeScreen.js
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Button, FlatList, Image, TouchableOpacity } from 'react-native';
-import { useSecureStore } from "@/src/providers/SecureStoreProvider";
-import * as DocumentPicker from 'expo-document-picker';
-import {router} from "expo-router";
+import React from 'react';
+import {View, Text, StyleSheet, ScrollView} from 'react-native';
+import AccountMenu from "@/src/components/AccountMenu";
 
 const HistoryScreen = () => {
-    const { actions } = useSecureStore();
-
-
-    const logout = () => {
-        actions.deleteToken();
-        router.replace("/loginScreen");
-    }
-
     return (
         <View style={styles.container}>
-            <View style={styles.purpleBackground}></View>
+            <AccountMenu/>
+            <View style={styles.purpleBackground}/>
 
             <View style={styles.whiteContainer}>
-                <Text style={styles.titulo}>Tela de Histórico</Text>
-
+                <ScrollView contentContainerStyle={styles.centralSection} showsVerticalScrollIndicator={false}>
+                    <Text style={styles.titulo}>Tela de Históricos</Text>
+                </ScrollView>
             </View>
         </View>
     );
@@ -41,17 +32,24 @@ const styles = StyleSheet.create({
     },
     whiteContainer: {
         flex: 1,
-        backgroundColor: '#FFFFFF',
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
+        backgroundColor: '#EEEEEE',
+        borderTopLeftRadius: 50,
+        borderTopRightRadius: 50,
         padding: 20,
         marginTop: '25%',
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
+        shadowOffset: {width: 0, height: 4},
         shadowOpacity: 0.3,
         shadowRadius: 10,
-        elevation: 10,
+        elevation: 5,
+    },
+    centralSection: {
         alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#FFFFFF',
+        borderRadius: 50,
+        padding: 10,
+        width: '100%',
     },
     titulo: {
         fontSize: 18,

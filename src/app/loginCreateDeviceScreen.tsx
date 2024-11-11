@@ -21,7 +21,7 @@ const LoginCreateDeviceScreen = () => {
             if (data) {
                 actions.setToken(data.token);
                 actions.setIdDevice(data.idDevice);
-                router.replace("/(app)/");
+                router.replace("/(auth)/");
             } else {
                 setError({ error: "Erro ao criar dispositivo" });
             }

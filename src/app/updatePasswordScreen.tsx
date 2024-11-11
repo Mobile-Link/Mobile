@@ -31,7 +31,7 @@ const ResetPasswordScreen = () => {
                     actions.setToken(loginAccount.data.token);
                 }
 
-                router.replace('/(app)/');
+                router.replace('/(auth)/');
             } else {
                 setError({ error: 'Erro ao atualizar a senha' });
             }

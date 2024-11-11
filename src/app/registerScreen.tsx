@@ -30,7 +30,7 @@ const Register = () => {
             if (registerUser) {
                 actions.setToken(registerUser.token);
                 actions.setIdDevice(registerUser.idDevice);
-                router.replace('/(app)/');
+                router.replace('/(auth)/');
             } else {
                 setError({ error: `Email já cadastrado` });
             }
