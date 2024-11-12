@@ -1,17 +1,25 @@
-import axios from "axios";
+import axios, {Axios, AxiosResponse} from "axios";
 
 interface LoginResponse{
     token: string,
     idDevice: number
 }
 
-interface CreatAccounteResponse{
+interface CreateAccounteResponse{
     token: string,
     idDevice: number
 }
 
-const login  = (emailOrUsername: string , password: string) => {
-    return axios.post ('http://localhost:5000/api/Auth/login', {
+const updatePassword = (email: string, password: string, code: string) => {
+    return axios.put('http://localhost:5000/api/Auth/updatePassword', {
+        email, 
+        password,
+        code
+    })
+}
+
+const login  = (emailOrUsername: string , password: string):Promise<AxiosResponse<CreateAccounteResponse, any>> => {
+    return axios.post<CreateAccounteResponse> ('http://localhost:5000/api/Auth/login', {
         emailOrUsername,
         password
     })
@@ -24,10 +32,12 @@ const validateCredentials = (emailOrUsername: string, password: string) => {
     });
 }
 
+const sendCodeNewAccount = (email: string) => {
+    return axios.get(`http://localhost:5000/api/Auth/sendCodeNewAccount?email=${email}`)
+}
+
 const sendCode = (email: string) => {
-    return axios.post(`http://localhost:5000/api/Auth/sendCode?email=${email}`, {
-        email
-    })
+    return axios.get(`http://localhost:5000/api/Auth/sendCode?email=${email}`)
 }
 
 const validateCode = (email: string, code: string) => {
@@ -39,7 +49,7 @@ const validateCode = (email: string, code: string) => {
 
 const register = async (email: string, password: string, username: string, code: string, deviceName: string) => {
     try{
-        const {data} = await axios.post('http://localhost:5000/api/Auth/register', {
+        const {data} = await axios.post(`http://localhost:5000/api/Auth/register?email=${email}&code=${code}`, {
             email,
             password,
             username,
@@ -55,7 +65,6 @@ const register = async (email: string, password: string, username: string, code:
 
 const loginCreateDevice = async (emailOrUsername: string, password: string, code: string, deviceName: string): Promise<LoginResponse | null>=> {
     try{
-        
         const {data} = await axios.post<LoginResponse>('http://localhost:5000/api/Auth/loginCreateDevice', {
             emailOrUsername,
             password,
@@ -71,8 +80,10 @@ const loginCreateDevice = async (emailOrUsername: string, password: string, code
 
 export {login};
 export {validateCredentials};
-export {sendCode};
+export {sendCodeNewAccount};
 export {validateCode};
 export {register};
 export {loginCreateDevice};
+export {updatePassword};
+export {sendCode};
 
