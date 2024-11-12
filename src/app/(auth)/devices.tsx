@@ -2,41 +2,35 @@ import React, {useState, useEffect} from 'react';
 import {View, Text, StyleSheet, ScrollView} from 'react-native';
 import AccountMenu from "@/src/components/AccountMenu";
 import Card from "@/src/components/DefaultCards";
-
-interface DeviceProps {
-    id: string;
-    name: string;
-    type: string;
-    status: string;
-}
-
-const exampleDevices=  [
-    {id: '1', name: 'Dispositivo', type: 'iOS', status: 'Online'},
-    {id: '2', name: 'Dispositivo', type: 'Android', status: 'Offline'},
-    {id: '3', name: 'Dispositivo', type: 'Windows', status: 'Online'},
-    {id: '4', name: 'Dispositivo', type: 'macOS', status: 'Offline'},
-    {id: '5', name: 'Dispositivo', type: 'Linux', status: 'Online'}
-];
+import {DeviceType} from "@/src/models/types/entities/DeviceType";
+import {getUserDevices} from "@/src/api/device.service";
+import {EnDeviceOs} from "@/src/models/types/enums/EnDevicesOs";
 
 const DevicesScreen = () => {
-    const [devices, setDevices] = useState<any>([]);
-
+    const [devices, setDevices] = useState<DeviceType[]>([]);
+    
     useEffect(() => {
-        setDevices(exampleDevices);
+        getUserDevices()
+            .then((response) => {
+                setDevices(response.data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     }, []);
 
-    const getDeviceIcon = (os: string) => {
+    const getDeviceIcon = (os: EnDeviceOs) => {
         switch (os) {
-            case 'iOS':
-                return 'apple';
-            case 'Android':
-                return 'android';
-            case 'macOS':
-                return 'apple-finder';
-            case 'Windows':
-                return 'microsoft-windows';
-            case 'Linux':
+            case 1:
                 return 'linux';
+            case 2:
+                return 'microsoft-windows';
+            case 3:
+                return 'android';
+            case 4:
+                return 'apple';
+            case 5:
+                return 'apple-finder';
             default:
                 return 'help-circle';
         }
@@ -48,21 +42,18 @@ const DevicesScreen = () => {
             <View style={styles.purpleBackground}/>
 
             <View style={styles.whiteContainer}>
-                <Text style={styles.titulo}>Seus Dispositivos</Text>
+                <Text style={styles.titulo}>Seus dispositivos</Text>
                 <ScrollView showsVerticalScrollIndicator={false}>
-                    
-
                     {devices.length === 0 ? (
                         <Text style={styles.noDevicesText}>Nenhum dispositivo encontrado.</Text>
                     ) : (
-                        devices.map((device: any) => (
-                                <Card
-                                    title = {device.type}
-                                    icon = {getDeviceIcon(device.type)}
-                                    statusText={device.status}
-                                    statusColor={device.status === 'Online' ? '#4CAF60' : '#F44336'}
-                                />
-                            ))
+                        devices.map((device: DeviceType) => (
+                            <Card
+                                key={device.idDevice.toString()} 
+                                title={device.name}
+                                icon={getDeviceIcon(device.enDeviceOs)}
+                            />
+                        ))
                     )}
                 </ScrollView>
             </View>

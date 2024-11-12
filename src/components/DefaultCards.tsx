@@ -3,9 +3,9 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 interface DetailsProps{
-    title: string;
+    title?: string;
     subtitle?: string;
-    icon: any;
+    icon?: any;
     iconColor?: string;
     onPress?: () => void;
     children?: React.ReactNode;
@@ -13,7 +13,7 @@ interface DetailsProps{
     statusColor?: string;
 }
 
-const Card = ({ title, icon, statusText, statusColor, onPress, children} : DetailsProps) => {
+const Card = ({ title, subtitle, icon, statusText, statusColor, onPress, children} : DetailsProps) => {
     return (
         <TouchableOpacity style={styles.card} onPress={onPress}>
             <View style={styles.row}>
@@ -27,7 +27,9 @@ const Card = ({ title, icon, statusText, statusColor, onPress, children} : Detai
                             {statusText}
                         </Text>
                     )}
+                    
                 </View>
+                {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
             </View>
             {children && <View style={styles.content}>{children}</View>}
             <MaterialCommunityIcons name="chevron-right" style={styles.chevronIcon} size={30} />
@@ -67,12 +69,21 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#333',
     },
+    subtitle: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: '#888787',
+        right: 180,
+        top: 40,
+        justifyContent: 'center',
+    },
     content: {
         marginTop: 10,
     },
     chevronIcon: {
         color: '#333',
         right: 20,
+        position: 'absolute',
     },
     statusText: {
         fontSize: 12,

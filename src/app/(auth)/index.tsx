@@ -10,8 +10,11 @@ const HomeScreen = () => {
             <View style={styles.purpleBackground}/>
 
             <View style={styles.whiteContainer}>
-                <ScrollView contentContainerStyle={styles.centralSection} showsVerticalScrollIndicator={false}>
-                    <Text style={styles.titulo}>Tela de Início</Text>
+                <ScrollView showsVerticalScrollIndicator={false}>
+                    <Text style={styles.titulo}>Dashboard</Text>
+                    <View style={styles.centralSection}> 
+                        <Text>Olá, bem-vindo ao seu dashboard!</Text>
+                    </View>
                 </ScrollView>
             </View>
         </View>
@@ -56,6 +59,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 10,
+        textAlign: 'center',
     },
 });
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import {View, Text, StyleSheet, ScrollView} from 'react-native';
 import AccountMenu from "@/src/components/AccountMenu";
+import Card from "@/src/components/DefaultCards";
 
 const HistoryScreen = () => {
     return (
@@ -9,8 +10,9 @@ const HistoryScreen = () => {
             <View style={styles.purpleBackground}/>
 
             <View style={styles.whiteContainer}>
-                <ScrollView contentContainerStyle={styles.centralSection} showsVerticalScrollIndicator={false}>
-                    <Text style={styles.titulo}>Tela de Históricos</Text>
+                <ScrollView showsVerticalScrollIndicator={false}>
+                    <Text style={styles.titulo}>Histórico de transferências</Text>
+                    <Card></Card>
                 </ScrollView>
             </View>
         </View>
@@ -55,6 +57,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 10,
+        textAlign: 'center',
     },
 });
 

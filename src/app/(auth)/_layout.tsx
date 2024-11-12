@@ -27,6 +27,7 @@ export default function Layout() {
                     screenOptions={{
                         tabBarShowLabel: true,
                         tabBarStyle: styles.tabBar,
+                        tabBarLabelStyle: { fontSize: 12 },
                         tabBarActiveTintColor: '#8A2BE2',
                         tabBarInactiveTintColor: '#3A3A3A',
                     }}
