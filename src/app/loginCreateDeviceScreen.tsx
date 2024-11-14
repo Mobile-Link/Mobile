@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TextInput, View, Text, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
+import {TextInput, View, Text, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Image} from "react-native";
 import { loginCreateDevice } from "@/src/api/auth.service";
 import { router, useLocalSearchParams } from "expo-router";
 import { useSecureStore } from "@/src/providers/SecureStoreProvider";
@@ -34,6 +34,8 @@ const LoginCreateDeviceScreen = () => {
         <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
             {/* Fundo roxo */}
             <View style={styles.purpleBackground} />
+            
+            <Image style={styles.logo} source={require("../../assets/images/logo-branca.png")}/>
 
             {/* Contêiner branco arredondado */}
             <View style={styles.whiteContainer}>
@@ -77,7 +79,6 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
         padding: 20,
-        marginTop: '50%',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
@@ -126,6 +127,12 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
+    logo: {
+        width: 110,
+        height: 110,
+        margin: 43,
+        alignSelf: "center"
+    }
 });
 
 export default LoginCreateDeviceScreen;

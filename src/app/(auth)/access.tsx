@@ -70,7 +70,7 @@ const AccessScreen = () => {
                     ) : (
                         devices.map((device: DeviceAccessType) => (
                             <Card title={device.device.name} icon={getDeviceIcon(device.device.enDeviceOs)}>
-                                {/*<Text style={styles.content}>Último acesso: {device.lastAccess + ''}</Text>*/} //TODO fazer funcionar a data
+                                {/*<Text style={styles.content}>Último acesso: {device.lastAccess + ''}</Text> //TODO fazer funcionar a data*/} 
                             </Card>
                         ))
                     )}

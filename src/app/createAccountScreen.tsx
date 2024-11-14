@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, StatusBar } from 'react-native';
+import {View, Text, TextInput, TouchableOpacity, StyleSheet, StatusBar, Image} from 'react-native';
 import { router } from "expo-router";
-import * as Font from "expo-font";
 import {sendCodeNewAccount} from '../api/auth.service';
 import {AxiosError} from "axios"
 
@@ -32,6 +31,8 @@ const CreateAccountScreen = () => {
     return (
         <View style={styles.container}>
             <View style={styles.purpleBackground}></View>
+            
+            <Image style={styles.logo} source={require("../../assets/images/logo-branca.png")}/>
 
             <View style={styles.whiteContainer}>
                 <Text style={styles.title}>Crie sua conta</Text>
@@ -80,7 +81,6 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
         padding: 20,
-        marginTop: '50%',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
@@ -141,6 +141,12 @@ const styles = StyleSheet.create({
         color: '#9465CF',
         fontWeight: 'bold',
     },
+    logo: {
+        width: 110,
+        height: 110,
+        margin: 43,
+        alignSelf: "center"
+    }
 });
 
 export default CreateAccountScreen;
