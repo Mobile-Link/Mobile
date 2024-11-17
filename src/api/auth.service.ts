@@ -1,4 +1,5 @@
-import axios, {Axios, AxiosResponse} from "axios";
+import {AxiosResponse} from "axios";
+import axiosDefault from "@/src/api/axiosConfig";
 
 interface LoginResponse{
     token: string,
@@ -11,37 +12,38 @@ interface CreateAccounteResponse{
 }
 
 const updatePassword = (email: string, password: string, code: string) => {
-    return axios.put('http://localhost:5000/api/Auth/updatePassword', {
+    return axiosDefault.put('/api/Auth/updatePassword', {
         email, 
         password,
         code
     })
 }
 
-const login  = (emailOrUsername: string , password: string):Promise<AxiosResponse<CreateAccounteResponse, any>> => {
-    return axios.post<CreateAccounteResponse> ('http://localhost:5000/api/Auth/login', {
+const login  = (emailOrUsername: string , password: string, idDevice: number):Promise<AxiosResponse<CreateAccounteResponse, any>> => {
+    return axiosDefault.post<CreateAccounteResponse> ('/api/Auth/login', {
         emailOrUsername,
-        password
+        password,
+        idDevice,
     })
 }
 
 const validateCredentials = (emailOrUsername: string, password: string) => {
-    return axios.post('http://localhost:5000/api/Auth/validateCredentials', {
+    return axiosDefault.post('/api/Auth/validateCredentials', {
         emailOrUsername,
         password
     });
 }
 
 const sendCodeNewAccount = (email: string) => {
-    return axios.get(`http://localhost:5000/api/Auth/sendCodeNewAccount?email=${email}`)
+    return axiosDefault.get(`/api/Auth/sendCodeNewAccount?email=${email}`)
 }
 
 const sendCode = (email: string) => {
-    return axios.get(`http://localhost:5000/api/Auth/sendCode?email=${email}`)
+    return axiosDefault.get(`/api/Auth/sendCode?email=${email}`)
 }
 
 const validateCode = (email: string, code: string) => {
-    return axios.post(`http://localhost:5000/api/Auth/verifyCode?email=${email}&code=${code}`, {
+    return axiosDefault.post(`/api/Auth/verifyCode?email=${email}&code=${code}`, {
         email,
         code
     })
@@ -49,7 +51,7 @@ const validateCode = (email: string, code: string) => {
 
 const register = async (email: string, password: string, username: string, code: string, deviceName: string) => {
     try{
-        const {data} = await axios.post(`http://localhost:5000/api/Auth/register?email=${email}&code=${code}`, {
+        const {data} = await axiosDefault.post(`/api/Auth/register?email=${email}&code=${code}`, {
             email,
             password,
             username,
@@ -65,7 +67,7 @@ const register = async (email: string, password: string, username: string, code:
 
 const loginCreateDevice = async (emailOrUsername: string, password: string, code: string, deviceName: string): Promise<LoginResponse | null>=> {
     try{
-        const {data} = await axios.post<LoginResponse>('http://localhost:5000/api/Auth/loginCreateDevice', {
+        const {data} = await axiosDefault.post<LoginResponse>('/api/Auth/loginCreateDevice', {
             emailOrUsername,
             password,
             code,

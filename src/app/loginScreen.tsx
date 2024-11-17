@@ -28,28 +28,30 @@ const LoginScreen = () => {
             }
             
             if (idDevice != null) {
-                const response = await login(emailOrUsername, password);
+                const response = await login(emailOrUsername, password, idDevice);
                 actions.setToken(response.data.token);
+                
+                console.log(response)
                 if (response.status === 200) {
                     router.replace('/(auth)/');
                 } else {
+                    console.log(response)
                     setError({ error: 'Credenciais inválidas' });
                 }
             }
         } catch (error) {
             setError({ error: 'Credenciais inválidas' });
+            console.log(error)
         }
     }
 
     return (
         <View style={styles.container}>
-            {/* Fundo roxo */}
         
             <View style={styles.purpleBackground} />
             
             <Image style={styles.logo} source={require("../../assets/images/logo-branca.png")}/>
             
-            {/* Container branco arredondado */}
             <View style={styles.whiteContainer}>
                 <Text style={styles.title}>Faça seu Login</Text>
 
@@ -71,16 +73,14 @@ const LoginScreen = () => {
 
                 {error && <Text style={styles.errorText}>{error.error}</Text>}
 
-                <TouchableOpacity onPress={() => router.replace('/forgotPasswordScreen')}>
-                    <Text style={styles.forgotPassword}>Esqueceu sua senha? <Text style={styles.linkText}>Clique Aqui</Text></Text>
-                </TouchableOpacity>
+                <Text onPress={() => router.replace('/forgotPasswordScreen')} style={styles.forgotPassword}>Esqueceu sua senha? <Text style={styles.linkText}>Clique Aqui</Text></Text>
+                
 
                 <TouchableOpacity style={styles.loginButton} onPress={submitLogin}>
                     <Text style={styles.loginButtonText}>Entrar</Text>
                 </TouchableOpacity>
             </View>
 
-            {/* Texto "Criar Conta" posicionado no canto inferior direito */}
             <TouchableOpacity style={styles.registerContainer} onPress={() => router.replace('/createAccountScreen')}>
                 <Text style={styles.registerText}>
                     Não possui uma conta? <Text style={styles.linkText}>Criar Conta</Text>

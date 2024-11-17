@@ -5,19 +5,45 @@ import Card from "@/src/components/DefaultCards";
 import {DeviceType} from "@/src/models/types/entities/DeviceType";
 import {getUserDevices} from "@/src/api/device.service";
 import {EnDeviceOs} from "@/src/models/types/enums/EnDevicesOs";
+import {useSignalR} from "@/src/hooks/signalR";
+import {getConnectedDevices} from "@/src/api/connection.service";
+
+
+type DeviceActive = DeviceType & {isActive: boolean}
 
 const DevicesScreen = () => {
-    const [devices, setDevices] = useState<DeviceType[]>([]);
+    const [devices, setDevices] = useState<DeviceActive[]>([]);
+    const {connection} = useSignalR();
     
-    useEffect(() => {
+    const populateDevices = (connectedDevices: number[]) => {
         getUserDevices()
             .then((response) => {
-                setDevices(response.data);
+                
+                let active: DeviceActive[] = []
+                
+                response.data.map((device)=> {
+                    active.push({...device, isActive: connectedDevices.includes(device.idDevice)})
+                })
+                
+                setDevices(active);
             })
             .catch((error) => {
                 console.log(error);
             });
+    }
+
+    useEffect(() => {
+        getConnectedDevices()
+            .then((response) => populateDevices(response.data))
     }, []);
+    
+    useEffect(() => {
+        if(connection == null){
+            return
+        }
+        
+        connection.on('UpdateConnectedDevices', populateDevices);
+    }, [connection]);
 
     const getDeviceIcon = (os: EnDeviceOs) => {
         switch (os) {
@@ -47,18 +73,20 @@ const DevicesScreen = () => {
                     {devices.length === 0 ? (
                         <Text style={styles.noDevicesText}>Nenhum dispositivo encontrado.</Text>
                     ) : (
-                        devices.map((device: DeviceType) => (
+                        devices.map((device: DeviceActive) => (
                             <Card
-                                key={device.idDevice.toString()} 
+                                key={device.idDevice}
                                 title={device.name}
                                 icon={getDeviceIcon(device.enDeviceOs)}
+                                statusText={device.isActive ? 'On-line' : 'Off-line'}
+                                statusColor={device.isActive ? '#4CAF60' : '#F44336'}
                             />
                         ))
                     )}
                 </ScrollView>
             </View>
         </View>
-    );
+    )
 };
 
 const styles = StyleSheet.create({

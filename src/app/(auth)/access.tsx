@@ -6,33 +6,20 @@ import {DeviceType} from "@/src/models/types/entities/DeviceType";
 import {getLastAccess, getUserDevices} from "@/src/api/device.service";
 import {EnDeviceOs} from "@/src/models/types/enums/EnDevicesOs";
 
-type DeviceAccessType = {
-    device: DeviceType,
-    lastAccess: Date
-}
-
 const AccessScreen = () => {
-    const [devices, setDevices] = useState<DeviceAccessType[]>([]);
+    const [devices, setDevices] = useState<DeviceType[]>([]);
 
     useEffect(() => {
         getUserDevices()
             .then((response) => {
-                const promisses: Promise<void>[] = []
-                const devices: DeviceAccessType[] = []
-
-                response.data.map((device: DeviceType) => {
-                    
-                    
-                    promisses.push(getLastAccess(device.idDevice).then((response) => {
-                        console.log(response.data)
-                        devices.push({device: device, lastAccess: response.data.date})
-                    }))
+                
+                response.data.map((device)=> {
+                    device.lastAccessDate = new Date (device.lastAccessDate)
                 })
-
-                Promise.all(promisses).then(() => {
-                    setDevices(devices);
-                })
-
+                
+                setDevices(response.data)
+                
+                console.log(response.data)
             })
             .catch((error) => {
                 console.log(error);
@@ -68,9 +55,9 @@ const AccessScreen = () => {
                     {devices.length === 0 ? (
                         <Text style={styles.noDevicesText}>Nenhum histórico encontrado.</Text>
                     ) : (
-                        devices.map((device: DeviceAccessType) => (
-                            <Card title={device.device.name} icon={getDeviceIcon(device.device.enDeviceOs)}>
-                                {/*<Text style={styles.content}>Último acesso: {device.lastAccess + ''}</Text> //TODO fazer funcionar a data*/} 
+                        devices.map((device: DeviceType) => ( device &&
+                            <Card key={device.idDevice} title={device.name} icon={getDeviceIcon(device.enDeviceOs)}>
+                                <Text style={styles.content}>Último acesso: {device.lastAccessDate.toLocaleString()}</Text> 
                             </Card>
                         ))
                     )}
@@ -139,7 +126,7 @@ const styles = StyleSheet.create({
         color: '#888787',
         textAlign: 'center',
         top: 30,
-        right: 300,
+        right: 310,
     },
 });
 

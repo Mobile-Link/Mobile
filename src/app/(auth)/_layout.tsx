@@ -3,10 +3,13 @@ import React, { useEffect, useState } from "react";
 import { useSecureStore } from "@/src/providers/SecureStoreProvider";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { View, StyleSheet } from "react-native";
+import {useSignalR} from "@/src/hooks/signalR";
 
 export default function Layout() {
     const { actions } = useSecureStore();
+    const {connectAccount} = useSignalR()
     const [loading, setLoading] = useState(true);
+    
 
     useEffect(() => {
         actions.getStoredToken().then((token) => {
@@ -14,6 +17,8 @@ export default function Layout() {
                 router.replace('/loginScreen');
                 return;
             }
+            
+            connectAccount()
 
             setLoading(false);
             actions.setToken(token);
