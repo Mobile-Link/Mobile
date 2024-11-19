@@ -4,6 +4,8 @@ import {useSecureStore} from "@/src/providers/SecureStoreProvider";
 import {MaterialCommunityIcons, FontAwesome5} from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
 import AccountMenu from "@/src/components/AccountMenu";
+import LayoutAuth from "@/src/components/LayoutAuth";
+import SelectDevice from "@/src/components/SelectDevice";
 
 const TransferenceScreen = () => {
     const {actions} = useSecureStore();
@@ -18,69 +20,36 @@ const TransferenceScreen = () => {
     };
 
     return (
-        <View style={styles.container}>
-            <AccountMenu/>
-            <View style={styles.purpleBackground}/>
+        <LayoutAuth>
+            <View style={styles.centralSection}>
+                <TouchableOpacity style={styles.deviceContainer} onPress={() => selectFile()}>
+                    <MaterialCommunityIcons name="cellphone" size={160} color="#D1B3FF"/>
+                </TouchableOpacity>
 
-            <View style={styles.whiteContainer}>
-                <View style={styles.centralSection}>
-                    <TouchableOpacity style={styles.deviceContainer} onPress={() => selectFile()}>
-                        <MaterialCommunityIcons name="cellphone" size={160} color="#D1B3FF"/>
-                    </TouchableOpacity>
-
-                    <View style={styles.arrowsContainer}>
-                        <MaterialCommunityIcons name="arrow-right" size={50} color="#D1B3FF"/>
-                        <MaterialCommunityIcons name="arrow-left" size={50} color="#D1B3FF"/>
-                    </View>
-
-                    <TouchableOpacity style={styles.deviceContainer}>
-                        <MaterialCommunityIcons name="monitor" size={150} color="#D1B3FF"/>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.floatingButton}>
-                        <MaterialCommunityIcons name="send" size={40} color={"#FFFFFF"}
-                                                style={{transform: [{rotate: '-45deg'}]}}/>
-                    </TouchableOpacity>
+                <View style={styles.arrowsContainer}>
+                    <MaterialCommunityIcons name="arrow-right" size={50} color="#D1B3FF"/>
+                    <MaterialCommunityIcons name="arrow-left" size={50} color="#D1B3FF"/>
                 </View>
+
+                <View>
+                    <SelectDevice
+                        title="Dispositivos"
+                        iconName="monitor"
+                        iconSize={160}
+                        iconColor="#D1B3FF"
+                    />
+                </View>
+
+                <TouchableOpacity style={styles.floatingButton}>
+                    <MaterialCommunityIcons name="send" size={40} color={"#FFFFFF"}
+                                            style={{transform: [{rotate: '-45deg'}]}}/>
+                </TouchableOpacity>
             </View>
-        </View>
+        </LayoutAuth>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#FFFFFF',
-    },
-    purpleBackground: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        height: 300,
-        backgroundColor: '#9465CF',
-    },
-    whiteContainer: {
-        flex: 1,
-        backgroundColor: '#EEEEEE',
-        borderTopLeftRadius: 50,
-        borderTopRightRadius: 50,
-        paddingTop: 20,
-        marginTop: "25%",
-        shadowColor: '#000',
-        shadowOffset: {width: 0, height: 4},
-        shadowOpacity: 0.3,
-        shadowRadius: 10,
-        elevation: 10,
-        alignItems: 'center',
-        paddingHorizontal: 20,
-    },
-    title: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 25,
-        color: '#000000',
-    },
     centralSection: {
         alignItems: 'center',
         justifyContent: 'center',

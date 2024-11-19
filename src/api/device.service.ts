@@ -8,6 +8,6 @@ export const getUserDevices = ():Promise<AxiosResponse<DeviceType[], any>> => {
 }
 
 export const getLastAccess = (idDevice: number):Promise<AxiosResponse<AccessLogType, any>> => {
-    return axiosDefault.get(`/api/Device/lastAccess?idDevice=${idDevice}`)
+    return axiosDefault.get(`/api/Device/registerAccess?idDevice=${idDevice}`)
 }
 
