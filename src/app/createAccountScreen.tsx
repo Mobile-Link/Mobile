@@ -130,8 +130,9 @@ const styles = StyleSheet.create({
     loginText: {
         fontSize: 14,
         color: '#000',
-        marginTop: 180,
-        left: 80,
+        marginTop: 350,
+        left: 30,
+        position: "absolute"
     },
     error: {
         color: 'red',

@@ -12,6 +12,7 @@ interface CardProps {
     onPress?: () => void;
     children?: React.ReactNode;
     iconRight?: any;
+    iconColorRight?: any;
     cardStyle?: StyleProp<ViewStyle>;
     rowStyle?: StyleProp<ViewStyle>;
     textStyle?: StyleProp<TextStyle>;
@@ -26,9 +27,10 @@ const Card = ({
                   icon,
                   iconColor,
                   statusText,
-                  statusColor = '#000',
+                  statusColor,
                   onPress,
                   iconRight,
+                  iconColorRight,
                   children,
                   cardStyle,
                   rowStyle,
@@ -63,6 +65,7 @@ const Card = ({
                 <MaterialCommunityIcons
                     name={iconRight}
                     size={30}
+                    color={iconColorRight}
                     style={[styles.chevronIcon, iconRightStyle]}
                 />
             )}

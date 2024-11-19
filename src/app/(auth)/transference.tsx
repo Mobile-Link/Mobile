@@ -23,7 +23,7 @@ const TransferenceScreen = () => {
         <LayoutAuth>
             <View style={styles.centralSection}>
                 <TouchableOpacity style={styles.deviceContainer} onPress={() => selectFile()}>
-                    <MaterialCommunityIcons name="cellphone" size={160} color="#D1B3FF"/>
+                    <MaterialCommunityIcons name="cellphone" size={210} color="#D1B3FF" />
                 </TouchableOpacity>
 
                 <View style={styles.arrowsContainer}>
@@ -35,14 +35,17 @@ const TransferenceScreen = () => {
                     <SelectDevice
                         title="Dispositivos"
                         iconName="monitor"
-                        iconSize={160}
+                        iconSize={200}
                         iconColor="#D1B3FF"
                     />
                 </View>
 
                 <TouchableOpacity style={styles.floatingButton}>
-                    <MaterialCommunityIcons name="send" size={40} color={"#FFFFFF"}
-                                            style={{transform: [{rotate: '-45deg'}]}}/>
+                    <MaterialCommunityIcons 
+                        name="send" size={40} 
+                        color={"#FFFFFF"}
+                        style={{transform: [{rotate: '-45deg'}]}}
+                    />
                 </TouchableOpacity>
             </View>
         </LayoutAuth>
@@ -57,10 +60,12 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         padding: 30,
         width: '100%',
+        gap: 15
     },
     deviceContainer: {
         alignItems: 'center',
-        marginBottom: 5,
+        marginBottom: 10,
+        marginTop: 10
     },
     selectText: {
         color: '#D1B3FF',

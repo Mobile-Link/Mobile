@@ -6,12 +6,6 @@ import Card from "@/src/components/DefaultCards";
 import CircleProgress from "@/src/components/CircleProgress";
 import Legend from "@/src/components/Legend";
 
-
-const progressData = {
-    labels: ["Swim"], // optional
-    data: [0.5]
-};
-
 const DescriptionDeviceScreen = () => {
     const params = useLocalSearchParams();
     const {name, os, isActive} = params;
