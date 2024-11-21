@@ -41,59 +41,74 @@ const TransferenceScreen = () => {
             return null;
         });
     };
-    
-    const tranfer = async () =>{
-        
-        if (device == null){
-            return
+
+    const transfer = async () => {
+        if (device == null) {
+            return;
         }
 
-        const fileSplit = selectedFile.split("/");
-        const fileName = fileSplit[fileSplit.length-1]
-        
+        const fileSplit = selectedFile.split('/');
+        const fileName = fileSplit[fileSplit.length - 1];
+
         const documentDirectory = FileSystem.documentDirectory;
         const targetDirectory = `${documentDirectory}outgoing/${Uuid.v4()}`;
         const targetFile = `${targetDirectory}/${fileName}`;
 
-        await FileSystem.copyAsync({from: selectedFile, to: targetFile})
-        
-        const response = await startTransference(device?.idDevice, targetFile, fileName, fileSize, "/")
-        
-        if(!response.data){
-            return //TODO retornar erro
+        await FileSystem.copyAsync({ from: selectedFile, to: targetFile });
+
+        const response = await startTransference(
+            device?.idDevice,
+            targetFile,
+            fileName,
+            fileSize,
+            '/'
+        );
+
+        if (!response.data) {
+            return; // TODO: retornar erro
         }
-        
-        console.log(response.data)
 
-        const chunkSize = 1024 * 1024
+        console.log('Iniciando transferência...', response.data);
+
+        const chunkSize = 512 * 1024;
         let startByteIndex = 0;
-        while (startByteIndex < fileSize) {
-            
-            console.log("chegou aqui")
-            
-            const readResult = await FileSystem.readAsStringAsync(targetFile, {
-                encoding: FileSystem.EncodingType.Base64,
-                position: startByteIndex,
-                length: chunkSize,
-            });
-            
-            const binaryData = atob(readResult);
-            const byteArray = new Uint8Array(binaryData.length);
-            for (let i = 0; i < binaryData.length; i++) {
-                byteArray[i] = binaryData.charCodeAt(i);
-            }
+        let attemptCount = 0;
+        const maxAttempts = 100;
 
-            sendFileChunk(response.data, startByteIndex, byteArray).then(response => {
-                console.log(JSON.stringify(response))
-            }).catch((error) => {
-                console.log(JSON.stringify(error))
-            });
+        const sendChunkWithDelay = async (startByteIndex: number) => {
+            try {
+                const readResult = await FileSystem.readAsStringAsync(targetFile, {
+                    encoding: FileSystem.EncodingType.Base64,
+                    position: startByteIndex,
+                    length: chunkSize,
+                });
+
+                const binaryData = atob(readResult);
+                const byteArray = new Uint8Array(binaryData.length);
+                for (let i = 0; i < binaryData.length; i++) {
+                    byteArray[i] = binaryData.charCodeAt(i);
+                }
+
+                console.log(`Enviando chunk de índice ${startByteIndex}`);
+                const sendResponse = await sendFileChunk(response.data, startByteIndex, byteArray);
+                console.log('Resposta do servidor:', sendResponse.data);
+            } catch (error) {
+                console.error(`Erro no envio do chunk ${startByteIndex}:`, error);
+            }
+        };
+        
+        while (startByteIndex < fileSize && attemptCount < maxAttempts) {
+            attemptCount++;
             
-            //TODO provavelmente não está aceitando o Uint8Array para realizar a transferência
+            await sendChunkWithDelay(startByteIndex);
 
             startByteIndex += chunkSize;
+
+            await new Promise(resolve => setTimeout(resolve, 100));
         }
-    }
+
+        console.log('Transferência concluída!');
+    };
 
     return (
         <LayoutAuth>
@@ -117,7 +132,7 @@ const TransferenceScreen = () => {
                     />
                 </View>
 
-                <TouchableOpacity style={styles.floatingButton} onPress={() => tranfer()}>
+                <TouchableOpacity style={styles.floatingButton} onPress={() => transfer()}>
                     <MaterialCommunityIcons 
                         name="send" size={40} 
                         color={"#FFFFFF"}
