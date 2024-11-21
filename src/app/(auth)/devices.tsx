@@ -1,13 +1,13 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text, StyleSheet, ScrollView} from 'react-native';
+import {Text, StyleSheet, ScrollView} from 'react-native';
 import Card from "@/src/components/DefaultCards";
 import {DeviceType} from "@/src/models/types/entities/DeviceType";
 import {getUserDevices} from "@/src/api/device.service";
-import {EnDeviceOs} from "@/src/models/types/enums/EnDevicesOs";
 import {useSignalR} from "@/src/hooks/signalR";
 import {getConnectedDevices} from "@/src/api/connection.service";
 import {router} from "expo-router";
 import LayoutAuth from "@/src/components/LayoutAuth";
+import getDeviceIcon from "@/src/constants/plataformIcon";
 
 
 type DeviceActive = DeviceType & {isActive: boolean}
@@ -25,6 +25,8 @@ const DevicesScreen = () => {
                 response.data.map((device)=> {
                     active.push({...device, isActive: connectedDevices.includes(device.idDevice)})
                 })
+
+                active.sort((a, b) => (b.isActive ? 1 : 0) - (a.isActive ? 1 : 0));
                 
                 setDevices(active);
             })
@@ -45,23 +47,6 @@ const DevicesScreen = () => {
         
         connection.on('UpdateConnectedDevices', populateDevices);
     }, [connection]);
-
-    const getDeviceIcon = (os: EnDeviceOs) => {
-        switch (os) {
-            case 1:
-                return 'linux';
-            case 2:
-                return 'microsoft-windows';
-            case 3:
-                return 'android';
-            case 4:
-                return 'apple';
-            case 5:
-                return 'apple-finder';
-            default:
-                return 'help-circle';
-        }
-    };
     
     const handleDevicePress = (device: DeviceActive) => {
         router.push({

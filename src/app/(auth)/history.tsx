@@ -1,33 +1,42 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Card from "@/src/components/DefaultCards";
 import LayoutAuth from "@/src/components/LayoutAuth";
-import CircularProgress from "@/src/components/CircleProgress";
 import CustomModal from "@/src/components/CustomModal";
+import FilterModal from "@/src/components/FilterModal";
+import { EnStatus } from "@/src/models/types/enums/EnStatus";
+import {useNavigation} from "@react-navigation/native";
 
 interface MockTransfersProps {
     id: number;
     name: string;
     date: string;
     status: string;
+    action: EnStatus;
     percentage?: number;
 }
 
 const HistoryScreen = () => {
     const [transfers, setTransfers] = useState<MockTransfersProps[]>([]);
+    const [filteredTransfers, setFilteredTransfers] = useState<MockTransfersProps[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedTransfer, setSelectedTransfer] = useState<{ label: string; value: string }[]>([]);
+    const [filterModalVisible, setFilterModalVisible] = useState(false);
+    const [filters, setFilters] = useState({
+        dateRange: { startDate: "", endDate: "" },
+        actions: [] as EnStatus[],
+    });
     const navigation = useNavigation();
 
     useEffect(() => {
         const mockTransfers: MockTransfersProps[] = [
-            { id: 1, name: "Nome_do_Arquivo.TXT", date: "19/11/2024", status: "success" },
-            { id: 2, name: "Nome_do_Arquivo.JPG", date: "19/11/2024", status: "progress", percentage: 0 },
-            { id: 3, name: "Nome_do_Arquivo.PNG", date: "19/11/2024", status: "error" },
+            { id: 1, name: "Nome_do_Arquivo.TXT", date: "19/11/2024", status: "success", action: EnStatus.Finished },
+            { id: 2, name: "Nome_do_Arquivo.JPG", date: "18/11/2024", status: "progress", action: EnStatus.In_cloud, percentage: 0 },
+            { id: 3, name: "Nome_do_Arquivo.PNG", date: "17/11/2024", status: "error", action: EnStatus.Error },
         ];
         setTransfers(mockTransfers);
+        setFilteredTransfers(mockTransfers);
 
         const interval = setInterval(() => {
             setTransfers((prevTransfers) =>
@@ -47,13 +56,37 @@ const HistoryScreen = () => {
         return () => clearInterval(interval);
     }, []);
 
+    const applyFilters = (newFilters: {
+        dateRange: { startDate: string; endDate: string };
+        actions: EnStatus[];
+    }) => {
+        let results = transfers;
+
+        if (newFilters.dateRange.startDate && newFilters.dateRange.endDate) {
+            results = results.filter((transfer) => {
+                const transferDate = new Date(transfer.date.split("/").reverse().join("-"));
+                const startDate = new Date(newFilters.dateRange.startDate);
+                const endDate = new Date(newFilters.dateRange.endDate);
+                return transferDate >= startDate && transferDate <= endDate;
+            });
+        }
+
+        if (newFilters.actions.length > 0) {
+            results = results.filter((transfer) =>
+                newFilters.actions.includes(transfer.action)
+            );
+        }
+
+        setFilteredTransfers(results);
+        setFilters(newFilters);
+    };
+
     useEffect(() => {
-        const unsubscribe = navigation.addListener("blur", () => {
-            setModalVisible(false); // Fecha o modal automaticamente ao trocar de tela
+        navigation.addListener("blur", () => {
+            setModalVisible(false);
         });
 
-        return unsubscribe;
-    }, [navigation]);
+    }, []);
 
     const handleCardPress = (transfer: MockTransfersProps) => {
         setSelectedTransfer([
@@ -68,28 +101,17 @@ const HistoryScreen = () => {
         setModalVisible(true);
     };
 
-    const getStatusIcon = (status: string) => {
-        switch (status) {
-            case "success":
-                return { name: "check", color: "#4CAF50" };
-            case "progress":
-                return { color: "#FFC107" };
-            case "error":
-                return { name: "close", color: "#EB3223" };
-            default:
-                return { name: "help-circle", color: "#888787" };
-        }
-    };
-
     return (
         <>
             <LayoutAuth title="Histórico de transferências">
                 <ScrollView showsVerticalScrollIndicator={false}>
-                    {transfers.length === 0 ? (
+                    {filteredTransfers.length === 0 ? (
                         <Text style={styles.noTransfersText}>Nenhum histórico encontrado.</Text>
                     ) : (
-                        transfers.map((transfer) => {
-                            const statusIcon = getStatusIcon(transfer.status);
+                        filteredTransfers.map((transfer) => {
+                            const statusIcon = transfer.status === "success"
+                                ? { name: "check", color: "#4CAF50" }
+                                : { name: "close", color: "#EB3223" };
 
                             return (
                                 <Card
@@ -108,23 +130,28 @@ const HistoryScreen = () => {
                                         />
                                         <Text style={styles.dateFileTranferText}>{transfer.date}</Text>
                                     </View>
-                                    {transfer.status === "progress" && transfer.percentage !== undefined && (
-                                        <CircularProgress
-                                            percentage={transfer.percentage}
-                                            radius={18}
-                                            strokeWidth={4}
-                                            centerText={`${transfer.percentage}%`}
-                                            textStyle={{ fontSize: 12, right: 6, color: "#9465CF" }}
-                                            color="#9465CF"
-                                            style={{ alignItems: "flex-end", height: 1, bottom: 10 }}
-                                        />
-                                    )}
                                 </Card>
                             );
                         })
                     )}
                 </ScrollView>
+
+                <View>
+                    <TouchableOpacity
+                        style={styles.bottomFilter}
+                        onPress={() => setFilterModalVisible(true)}
+                    >
+                        <MaterialCommunityIcons name="filter-outline" size={40} color="#ffffff" />
+                    </TouchableOpacity>
+                </View>
             </LayoutAuth>
+
+            <FilterModal
+                visible={filterModalVisible}
+                onClose={() => setFilterModalVisible(false)}
+                filters={filters}
+                onApplyFilters={applyFilters}
+            />
 
             <CustomModal
                 visible={modalVisible}
@@ -149,6 +176,14 @@ const styles = StyleSheet.create({
     dateFileTranferText: {
         color: "#888787",
         fontSize: 16,
+    },
+    bottomFilter: {
+        position: "absolute",
+        alignSelf: "flex-end",
+        backgroundColor: "#9465CF",
+        padding: 8,
+        borderRadius: 30,
+        bottom: 1,
     },
 });
 

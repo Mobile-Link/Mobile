@@ -3,6 +3,7 @@ import {TextInput, View, Text, TouchableOpacity, StyleSheet, KeyboardAvoidingVie
 import { loginCreateDevice } from "@/src/api/auth.service";
 import { router, useLocalSearchParams } from "expo-router";
 import { useSecureStore } from "@/src/providers/SecureStoreProvider";
+import {EnDeviceOs} from "@/src/models/types/enums/EnDevicesOs";
 
 type ErrorState = {
     error: string;
@@ -32,16 +33,13 @@ const LoginCreateDeviceScreen = () => {
 
     return (
         <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
-            {/* Fundo roxo */}
             <View style={styles.purpleBackground} />
             
             <Image style={styles.logo} source={require("../../assets/images/logo-branca.png")}/>
 
-            {/* Contêiner branco arredondado */}
             <View style={styles.whiteContainer}>
                 <Text style={styles.title}>Nomeie seu dispositivo</Text>
 
-                {/* Input para nome do dispositivo */}
                 <Text style={styles.label}>Nome do Dispositivo</Text>
                 <TextInput
                     style={styles.input}
@@ -51,7 +49,6 @@ const LoginCreateDeviceScreen = () => {
 
                 {error && <Text style={styles.errorText}>{error.error}</Text>}
 
-                {/* Botão Entrar */}
                 <TouchableOpacity style={styles.enterButton} onPress={submitLoginCreateDevice}>
                     <Text style={styles.enterButtonText}>Entrar</Text>
                 </TouchableOpacity>

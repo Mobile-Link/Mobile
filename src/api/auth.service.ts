@@ -1,5 +1,7 @@
 import {AxiosResponse} from "axios";
 import axiosDefault from "@/src/api/axiosConfig";
+import {EnDeviceOs} from "@/src/models/types/enums/EnDevicesOs";
+import {Platform} from "react-native";
 
 interface LoginResponse{
     token: string,
@@ -9,6 +11,17 @@ interface LoginResponse{
 interface CreateAccounteResponse{
     token: string,
     idDevice: number
+}
+
+const getPlatformOS = () => {
+    switch (Platform.OS) {
+        case "android":
+            return EnDeviceOs.Android;
+        case "ios":
+            return EnDeviceOs.IOS;
+        default:
+            return EnDeviceOs.Unknown;
+    }
 }
 
 const updatePassword = (email: string, password: string, code: string) => {
@@ -56,7 +69,8 @@ const register = async (email: string, password: string, username: string, code:
             password,
             username,
             code,
-            deviceName
+            deviceName,
+            platformOs: getPlatformOS()
         })
         
         return data;
@@ -71,7 +85,8 @@ const loginCreateDevice = async (emailOrUsername: string, password: string, code
             emailOrUsername,
             password,
             code,
-            deviceName
+            deviceName,
+            platformOs: getPlatformOS()
         })
         return data;
         

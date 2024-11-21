@@ -31,17 +31,14 @@ const LoginScreen = () => {
                 const response = await login(emailOrUsername, password, idDevice);
                 actions.setToken(response.data.token);
                 
-                console.log(response)
                 if (response.status === 200) {
                     router.replace('/(auth)/');
                 } else {
-                    console.log(response)
                     setError({ error: 'Credenciais inválidas' });
                 }
             }
         } catch (error) {
             setError({ error: 'Credenciais inválidas' });
-            console.log(error)
         }
     }
 

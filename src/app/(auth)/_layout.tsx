@@ -1,9 +1,10 @@
 import {Tabs, router} from "expo-router";
 import React, {useEffect, useState} from "react";
-import {useSecureStore} from "@/src/providers/SecureStoreProvider";
+import {SecureStoreProvider, useSecureStore} from "@/src/providers/SecureStoreProvider";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import {View, StyleSheet} from "react-native";
 import {useSignalR} from "@/src/hooks/signalR";
+import * as SecureStore from 'expo-secure-store';
 
 export default function Layout() {
     const {actions} = useSecureStore();
@@ -12,6 +13,8 @@ export default function Layout() {
 
 
     useEffect(() => {
+        // SecureStore.deleteItemAsync("idDevice")
+        
         actions.getStoredToken().then((token) => {
             if (token == null) {
                 router.replace('/loginScreen');

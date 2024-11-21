@@ -1,5 +1,5 @@
 export enum EnStatus {
-    Not_started = 1,
+    Not_started,
     In_progress ,    
     In_cloud ,
     Verifying ,

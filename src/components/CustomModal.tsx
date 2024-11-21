@@ -3,7 +3,6 @@ import {
     View,
     Text,
     StyleSheet,
-    TouchableOpacity,
     ScrollView,
     Animated,
     Dimensions,
@@ -56,7 +55,7 @@ const CustomModal = ({ visible, onClose, title, details }: CustomModalProps) => 
                     <Text style={styles.title}>{title}</Text>
                 </View>
 
-                <ScrollView contentContainerStyle={styles.contentContainer}>
+                <ScrollView contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
                     {details.map((item, index) => (
                         <View key={index} style={styles.detailBox}>
                             <Text style={styles.detailDate}>{item.label}</Text>
@@ -91,10 +90,9 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 60,
         paddingHorizontal: 20,
         paddingTop: 20,
-        paddingBottom: 40,
+        paddingBottom: 20,
         maxHeight: "80%",
         position: "absolute",
-        bottom: 0,
         width: "100%",
     },
     header: {
