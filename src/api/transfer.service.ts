@@ -11,28 +11,23 @@ export const startTransference = (idDevice: number, filePath: string, fileNameEx
     })
 }
 
-export const sendFileChunk = async(idTransfer: number, startByteIndex: number, byteArray: Uint8Array): Promise<AxiosResponse<boolean>> => {
-
+export const sendFileChunk = async (idTransfer: number, startByteIndex: number, base64Data: string): Promise<AxiosResponse<boolean>> => {
     try {
-        const base64Data = btoa(String.fromCharCode(...byteArray));
+        const data = {
+            idTransfer,
+            startByteIndex,
+            byteArray: base64Data,
+        };
 
-        const formData = new FormData();
-        formData.append('idTransfer', idTransfer.toString());
-        formData.append('startByteIndex', startByteIndex.toString());
-        formData.append('byteArray', base64Data);
-
-        console.log("Enviando chunk:", { idTransfer, startByteIndex, base64Data });
-
-        const response = await axiosDefault.post(`/api/Transfer/sendFileChunk`, formData, {
+        const response = await axiosDefault.post("/api/Transfer/sendFileChunk", data, {
             headers: {
-                'Content-Type': 'multipart/form-data',
+                "Content-Type": "application/json",
             },
         });
 
         return response;
-
     } catch (error) {
-        console.error("Erro ao enviar o chunk:", error);
+        console.error("Erro ao enviar chunk:", error);
         throw error;
     }
-}
+};

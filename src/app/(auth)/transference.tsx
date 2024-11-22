@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {View, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, StyleSheet, TouchableOpacity, Text} from 'react-native';
 import {useSecureStore} from "@/src/providers/SecureStoreProvider";
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
@@ -15,7 +15,7 @@ interface DeviceActive {
     isActive: boolean;
 }
 
-const TransferenceScreen = () => {
+export const TransferenceScreen = () => {
     const {actions} = useSecureStore();
     const [selectedFile, setSelectedFile] = useState<string>('')
     const [fileSize, setFileSize] = useState<number>(0)
@@ -25,21 +25,21 @@ const TransferenceScreen = () => {
         DocumentPicker.getDocumentAsync({
             type: "*/*",
         })
-            .then(result =>{
-                
-                if(result?.assets?.[0]?.uri){
+            .then(result => {
+
+                if (result?.assets?.[0]?.uri) {
                     setSelectedFile(result?.assets?.[0]?.uri)
                 }
-                
-                if(result?.assets?.[0]?.size){
+
+                if (result?.assets?.[0]?.size) {
                     setFileSize(result?.assets?.[0]?.size)
                 }
-                
+
             })
             .catch(error => {
-            console.error("Error selecting file:", error);
-            return null;
-        });
+                console.error("Error selecting file:", error);
+                return null;
+            });
     };
 
     const transfer = async () => {
@@ -47,75 +47,77 @@ const TransferenceScreen = () => {
             return;
         }
 
-        const fileSplit = selectedFile.split('/');
+        const fileSplit = selectedFile.split("/");
         const fileName = fileSplit[fileSplit.length - 1];
 
         const documentDirectory = FileSystem.documentDirectory;
         const targetDirectory = `${documentDirectory}outgoing/${Uuid.v4()}`;
         const targetFile = `${targetDirectory}/${fileName}`;
+        await FileSystem.copyAsync({from: selectedFile, to: targetFile});
 
-        await FileSystem.copyAsync({ from: selectedFile, to: targetFile });
-
-        const response = await startTransference(
-            device?.idDevice,
-            targetFile,
-            fileName,
-            fileSize,
-            '/'
-        );
+        const response = await startTransference(device?.idDevice, targetFile, fileName, fileSize, "/");
 
         if (!response.data) {
-            return; // TODO: retornar erro
+            console.error("Erro ao iniciar transferência.");
+            return;
         }
 
-        console.log('Iniciando transferência...', response.data);
+        console.log("Transferência iniciada, ID:", response.data);
 
-        const chunkSize = 512 * 1024;
+        const chunkSize = 1024 * 1024;
         let startByteIndex = 0;
-        let attemptCount = 0;
-        const maxAttempts = 100;
 
-        const sendChunkWithDelay = async (startByteIndex: number) => {
+        if (fileSize <= chunkSize) {
             try {
+                console.log("Arquivo pequeno, enviando inteiro em um único chunk.");
+
                 const readResult = await FileSystem.readAsStringAsync(targetFile, {
                     encoding: FileSystem.EncodingType.Base64,
                     position: startByteIndex,
-                    length: chunkSize,
+                    length: fileSize,
                 });
 
-                const binaryData = atob(readResult);
-                const byteArray = new Uint8Array(binaryData.length);
-                for (let i = 0; i < binaryData.length; i++) {
-                    byteArray[i] = binaryData.charCodeAt(i);
-                }
+                console.log("Enviando arquivo completo como um único chunk");
+                await sendFileChunk(response.data, startByteIndex, readResult);
 
-                console.log(`Enviando chunk de índice ${startByteIndex}`);
-                const sendResponse = await sendFileChunk(response.data, startByteIndex, byteArray);
-                console.log('Resposta do servidor:', sendResponse.data);
             } catch (error) {
-                console.error(`Erro no envio do chunk ${startByteIndex}:`, error);
+                console.error("Erro ao enviar o arquivo completo:", error);
             }
-        };
-        
-        while (startByteIndex < fileSize && attemptCount < maxAttempts) {
-            attemptCount++;
-            
-            await sendChunkWithDelay(startByteIndex);
+        } else {
+            while (startByteIndex < fileSize) {
+                try {
+                    console.log(`Preparando chunk a partir do índice: ${startByteIndex}`);
 
-            startByteIndex += chunkSize;
+                    const readResult = await FileSystem.readAsStringAsync(targetFile, {
+                        encoding: FileSystem.EncodingType.Base64,
+                        position: startByteIndex,
+                        length: chunkSize,
+                    });
 
-            await new Promise(resolve => setTimeout(resolve, 100));
+                    console.log(`Enviando chunk (início: ${startByteIndex})`);
+                    sendFileChunk(response.data, startByteIndex, readResult).then(() => {});
+
+                    console.log(`Enviando chunk com startByteIndex: ${startByteIndex}`);
+
+                    startByteIndex += chunkSize;
+
+                } catch (error) {
+                    console.error(`Erro ao enviar chunk no índice ${startByteIndex}:`, error);
+                    break;
+                }
+            }
         }
-
-        console.log('Transferência concluída!');
+        console.log("Transferência concluída!");
     };
 
     return (
         <LayoutAuth>
             <View style={styles.centralSection}>
                 <TouchableOpacity style={styles.deviceContainer} onPress={() => selectFile()}>
-                    <MaterialCommunityIcons name="cellphone" size={210} color="#D1B3FF" />
+                    <MaterialCommunityIcons name="cellphone" size={210} color="#D1B3FF"/>
                 </TouchableOpacity>
+                
+                <Text>{selectedFile.split('/')}</Text>
 
                 <View style={styles.arrowsContainer}>
                     <MaterialCommunityIcons name="arrow-right" size={50} color="#D1B3FF"/>
@@ -133,8 +135,8 @@ const TransferenceScreen = () => {
                 </View>
 
                 <TouchableOpacity style={styles.floatingButton} onPress={() => transfer()}>
-                    <MaterialCommunityIcons 
-                        name="send" size={40} 
+                    <MaterialCommunityIcons
+                        name="send" size={40}
                         color={"#FFFFFF"}
                         style={{transform: [{rotate: '-45deg'}]}}
                     />
