@@ -4,6 +4,7 @@ import * as signalR from '@microsoft/signalr';
 import {HubConnection} from "@microsoft/signalr";
 import {SignalRProviderType} from "@/src/models/types/SignalRProviderType";
 import * as SecureStore from "expo-secure-store";
+import {ReceiveFileChunk} from "@/src/util/transferenceUtil";
 
 export const SignalRContext = createContext<SignalRProviderType | undefined>(undefined);
 
@@ -54,10 +55,10 @@ export const SignalRProvider = ({children}: { children: React.ReactNode }) => {
                 connection.on(
                     'ReceiveFileChunk',
                     (idTransfer, startByteIndex, byteArray) => {
-                        console.log(
-                            `New chunk received ${idTransfer}, ${startByteIndex}, Length: ${byteArray.length}`
-                        );
+                        // ReceiveFileChunk(idTransfer, startByteIndex, byteArray)
+                        console.log(`${idTransfer}, ${startByteIndex}, ${byteArray}`)
                     }
+                    //TODO não está chegando no receiveFileChunk
                 );
 
                 connection.on(
@@ -68,6 +69,10 @@ export const SignalRProvider = ({children}: { children: React.ReactNode }) => {
                         );
                     }
                 );
+                
+                connection.on('ReSendChunks', (idTransfer: number) => {
+                    console.log(`Reviando os chunks da transferência ${idTransfer}`)
+                })
 
                 connection.on('FinalizeTransference', (idTransference) => {
                     console.log(`Transference ${idTransference} finalized`);

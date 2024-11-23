@@ -31,3 +31,11 @@ export const sendFileChunk = async (idTransfer: number, startByteIndex: number, 
         throw error;
     }
 };
+
+export const getTransferChunks = async (idTransfer: AxiosResponse<number>): Promise<AxiosResponse<number>> => {
+    return axiosDefault.get(`/api/transfer/getTransferChunks?idTransfer=${idTransfer}`)
+}
+
+export const getTransfer = async (idTransfer: number): Promise<AxiosResponse<number>> => {
+    return axiosDefault.get(`/api/transfer/getTransfer?idTransfer=${idTransfer}`)
+}

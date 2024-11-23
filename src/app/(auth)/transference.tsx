@@ -8,6 +8,7 @@ import SelectDevice from "@/src/components/SelectDevice";
 import * as FileSystem from "expo-file-system"
 import Uuid from "expo-modules-core/src/uuid";
 import {sendFileChunk, startTransference} from "@/src/api/transfer.service";
+import {useSignalR} from "@/src/hooks/signalR";
 
 interface DeviceActive {
     idDevice: number;
@@ -20,6 +21,7 @@ export const TransferenceScreen = () => {
     const [selectedFile, setSelectedFile] = useState<string>('')
     const [fileSize, setFileSize] = useState<number>(0)
     const [device, setDevice] = useState<DeviceActive | null>(null);
+    const {connection} = useSignalR();
 
     const selectFile = async (): Promise<void> => {
         DocumentPicker.getDocumentAsync({
@@ -117,7 +119,9 @@ export const TransferenceScreen = () => {
                     <MaterialCommunityIcons name="cellphone" size={210} color="#D1B3FF"/>
                 </TouchableOpacity>
                 
-                <Text>{selectedFile.split('/')}</Text>
+                <Text>{selectedFile}</Text>
+                <Text>{connection && connection.state}</Text>
+                {/*{TODO state not updating testing, temporally only screen}*/}
 
                 <View style={styles.arrowsContainer}>
                     <MaterialCommunityIcons name="arrow-right" size={50} color="#D1B3FF"/>
