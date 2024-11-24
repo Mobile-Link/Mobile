@@ -9,6 +9,7 @@ import { useColorScheme } from '@/src/hooks/useColorScheme';
 import { SignalRProvider } from '@/src/hooks/signalR';
 import { SecureStoreProvider } from '@/src/providers/SecureStoreProvider';
 import {registerTranslation, pt} from "react-native-paper-dates";
+import {FileWriteBuffer} from "@/modules/file-write-buffer"
 
 registerTranslation("pt", pt)
 
@@ -25,6 +26,9 @@ export default function RootLayout() {
       if(loaded){
           SplashScreen.hideAsync();
       }
+
+      console.log(FileWriteBuffer())
+
   }, [loaded]);
   
   return (
