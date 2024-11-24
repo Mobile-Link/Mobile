@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     View,
     Text,
@@ -12,6 +12,7 @@ import {
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {getUserDevices} from "@/src/api/device.service";
 import {getConnectedDevices} from "@/src/api/connection.service";
+import {useNavigation} from "@react-navigation/native";
 
 interface DeviceActive {
     idDevice: number;
@@ -40,6 +41,7 @@ const SelectDevice = ({
                       }: SelectDeviceProps) => {
     const [isMenuVisible, setIsMenuVisible] = useState(false);
     const [devices, setDevices] = useState<DeviceActive[]>([]);
+    const navigation = useNavigation();
 
     const populateDevices = (connectedDevices: number[]) => {
         getUserDevices()
@@ -71,53 +73,63 @@ const SelectDevice = ({
         if (onDeviceSelect) onDeviceSelect(device);
     };
 
-    return (
-        <TouchableWithoutFeedback onPress={() => setIsMenuVisible(false)}>
-            <View style={[styles.container, containerStyle]}>
-                <TouchableOpacity
-                    onPress={(e) => {
-                        e.stopPropagation();
-                        toggleMenu();
-                    }}
-                >
-                    <MaterialCommunityIcons
-                        name={iconName}
-                        size={iconSize}
-                        color={iconColor}
-                    />
-                </TouchableOpacity>
+    useEffect(() => {
+        navigation.addListener("blur", () => {
+            setIsMenuVisible(false);
+        });
 
-                {isMenuVisible && (
-                    <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
-                        <View style={[styles.menu, menuStyle]}>
-                            <Text style={styles.title}>{title}</Text>
-                            <FlatList
-                                data={devices}
-                                keyExtractor={(item) => item.idDevice.toString()}
-                                renderItem={({item}) => (
-                                    <TouchableOpacity
-                                        style={styles.menuItemContainer}
-                                        onPress={() => handleDeviceSelect(item)}
-                                    >
-                                        <MaterialCommunityIcons
-                                            name={item.isActive ? "circle" : "circle-outline"}
-                                            size={20}
-                                            color={item.isActive ? "#4caf50" : "#f44336"}
-                                        />
-                                        <Text style={styles.menuItem}>{item.name}</Text>
-                                    </TouchableOpacity>
-                                )}
-                                ListEmptyComponent={
-                                    <Text style={styles.emptyText}>
-                                        Nenhum dispositivo encontrado.
-                                    </Text>
-                                }
-                            />
-                        </View>
-                    </TouchableWithoutFeedback>
-                )}
-            </View>
-        </TouchableWithoutFeedback>
+    }, []);
+
+    return (
+        <>
+            <TouchableWithoutFeedback onPress={() => setIsMenuVisible(false)}>
+                <View style={[styles.container, containerStyle]}>
+                    <TouchableOpacity
+                        onPress={(e) => {
+                            e.stopPropagation();
+                            toggleMenu();
+                        }}
+                    >
+                        <MaterialCommunityIcons
+                            name={iconName}
+                            size={iconSize}
+                            color={iconColor}
+                        />
+                    </TouchableOpacity>
+                </View>
+            </TouchableWithoutFeedback>
+
+            {isMenuVisible && (
+                <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
+                    <View style={[styles.menu, menuStyle]}>
+                        <Text style={styles.title}>{title}</Text>
+                        <FlatList
+                            data={devices}
+                            keyExtractor={(item) => item.idDevice.toString()}
+                            renderItem={({item}) => (
+                                <TouchableOpacity
+                                    style={styles.menuItemContainer}
+                                    onPress={() => handleDeviceSelect(item)}
+                                >
+                                    <MaterialCommunityIcons
+                                        name={item.isActive ? "circle" : "circle-outline"}
+                                        size={20}
+                                        color={item.isActive ? "#4caf50" : "#f44336"}
+                                    />
+                                    <Text style={styles.menuItem}>{item.name}</Text>
+                                </TouchableOpacity>
+                            )}
+                            ListEmptyComponent={
+                                <Text style={styles.emptyText}>
+                                    Nenhum dispositivo encontrado.
+                                </Text>
+                            }
+                        />
+                    </View>
+                </TouchableWithoutFeedback>
+            )}
+        
+        </>
     );
 };
 
@@ -130,7 +142,6 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         backgroundColor: '#FFFFFF',
         width: 300,
-        maxHeight: 300,
         padding: 10,
         borderRadius: 10,
         shadowColor: '#000',
@@ -139,11 +150,12 @@ const styles = StyleSheet.create({
         shadowRadius: 10,
         elevation: 15,
         zIndex: 10,
+        marginBottom: 200,
     },
     menuItemContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 13,
+        paddingVertical: 10,
         paddingLeft: 10,
         borderColor: "#8A2BE2",
         borderWidth: 2,

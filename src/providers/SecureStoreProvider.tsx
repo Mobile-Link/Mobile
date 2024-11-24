@@ -8,7 +8,7 @@ const SecureStoreContext = createContext<SecureStoreProviderType | null>(null);
 
 function SecureStoreProvider({ children }: { children: JSX.Element }) {
 
-  const [stored, setStored] = useState<SecureStoreType>({idDevice: null, token: null});
+  const [stored, setStored] = useState<SecureStoreType>({idDevice: null, token: null, folder:null});
   
   const actions: SecureStoreActions = {
     setToken(token: string) {
@@ -38,9 +38,28 @@ function SecureStoreProvider({ children }: { children: JSX.Element }) {
     deleteToken() {
         SecureStore.deleteItemAsync("token");
         setStored((prevState:SecureStoreType) => {return{...prevState, token: null}});
+    },
+    setFolder(folder: string) {
+      SecureStore.setItem("folder", folder);
+      setStored((prevState:SecureStoreType) => {return{...prevState, folder}});
+    },
+    getFolder() {
+      return stored.folder;
+    },
+    getStoredFolder() {
+      return new Promise<string | null>((resolve, reject) => {
+        SecureStore.getItemAsync("folder").then((folder)=>{
+          resolve(folder);
+        }).catch(()=>resolve(null))
+      })
+    },
+    deleteFolder(){
+      SecureStore.deleteItemAsync("folder");
+      setStored((prevState:SecureStoreType) => {return{...prevState, folder: null}});
     }
   };
-
+  
+  
   return (
     <SecureStoreContext.Provider value={{ stored, actions }}>
       {children}

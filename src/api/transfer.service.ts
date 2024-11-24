@@ -1,5 +1,6 @@
 import {AxiosResponse} from "axios";
 import axiosDefault from "@/src/api/axiosConfig";
+import {TransferenceType} from "@/src/models/types/entities/TransferenceType";
 
 export const startTransference = (idDevice: number, filePath: string, fileNameExtension: string, fileSize: number, destinationPath: string):Promise<AxiosResponse<number, any>> => {
     return axiosDefault.post(`/api/Transfer/startTransference`, {
@@ -32,10 +33,10 @@ export const sendFileChunk = async (idTransfer: number, startByteIndex: number, 
     }
 };
 
-export const getTransferChunks = async (idTransfer: AxiosResponse<number>): Promise<AxiosResponse<number>> => {
+export const getTransferChunks = async (idTransfer: number): Promise<AxiosResponse<number>> => {
     return axiosDefault.get(`/api/transfer/getTransferChunks?idTransfer=${idTransfer}`)
 }
 
-export const getTransfer = async (idTransfer: number): Promise<AxiosResponse<number>> => {
+export const getTransfer = async (idTransfer: number): Promise<AxiosResponse<TransferenceType>> => {
     return axiosDefault.get(`/api/transfer/getTransfer?idTransfer=${idTransfer}`)
 }

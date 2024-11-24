@@ -8,7 +8,6 @@ import SelectDevice from "@/src/components/SelectDevice";
 import * as FileSystem from "expo-file-system"
 import Uuid from "expo-modules-core/src/uuid";
 import {sendFileChunk, startTransference} from "@/src/api/transfer.service";
-import {useSignalR} from "@/src/hooks/signalR";
 
 interface DeviceActive {
     idDevice: number;
@@ -17,11 +16,9 @@ interface DeviceActive {
 }
 
 export const TransferenceScreen = () => {
-    const {actions} = useSecureStore();
     const [selectedFile, setSelectedFile] = useState<string>('')
     const [fileSize, setFileSize] = useState<number>(0)
     const [device, setDevice] = useState<DeviceActive | null>(null);
-    const {connection} = useSignalR();
 
     const selectFile = async (): Promise<void> => {
         DocumentPicker.getDocumentAsync({
@@ -110,6 +107,7 @@ export const TransferenceScreen = () => {
             }
         }
         console.log("Transferência concluída!");
+        // setSelectedFile("");
     };
 
     return (
@@ -118,25 +116,21 @@ export const TransferenceScreen = () => {
                 <TouchableOpacity style={styles.deviceContainer} onPress={() => selectFile()}>
                     <MaterialCommunityIcons name="cellphone" size={210} color="#D1B3FF"/>
                 </TouchableOpacity>
-                
+
                 <Text>{selectedFile}</Text>
-                <Text>{connection && connection.state}</Text>
-                {/*{TODO state not updating testing, temporally only screen}*/}
 
                 <View style={styles.arrowsContainer}>
                     <MaterialCommunityIcons name="arrow-right" size={50} color="#D1B3FF"/>
                     <MaterialCommunityIcons name="arrow-left" size={50} color="#D1B3FF"/>
                 </View>
 
-                <View>
-                    <SelectDevice
-                        title="Dispositivos"
-                        iconName="monitor"
-                        iconSize={200}
-                        iconColor="#D1B3FF"
-                        onDeviceSelect={(device) => setDevice(device)}
-                    />
-                </View>
+                <SelectDevice
+                    title="Dispositivos"
+                    iconName="monitor"
+                    iconSize={200}
+                    iconColor="#D1B3FF"
+                    onDeviceSelect={(device) => setDevice(device)}
+                />
 
                 <TouchableOpacity style={styles.floatingButton} onPress={() => transfer()}>
                     <MaterialCommunityIcons

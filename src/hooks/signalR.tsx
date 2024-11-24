@@ -32,7 +32,7 @@ export const SignalRProvider = ({children}: { children: React.ReactNode }) => {
             }
 
             const connection = new signalR.HubConnectionBuilder()
-                .withUrl(`http://localhost:5000/connectionhub`,
+                .withUrl(`http://201.41.169.132/connectionhub`,
                     {accessTokenFactory: () => token}).build();
             setConnection(connection);
 
@@ -55,8 +55,10 @@ export const SignalRProvider = ({children}: { children: React.ReactNode }) => {
                 connection.on(
                     'ReceiveFileChunk',
                     (idTransfer, startByteIndex, byteArray) => {
-                        // ReceiveFileChunk(idTransfer, startByteIndex, byteArray)
-                        console.log(`${idTransfer}, ${startByteIndex}, ${byteArray}`)
+                        ReceiveFileChunk(idTransfer, startByteIndex, byteArray).then(() => {
+                        })
+                            console.log(`${idTransfer}, ${startByteIndex}, ${byteArray}`)
+                        
                     }
                     //TODO não está chegando no receiveFileChunk
                 );

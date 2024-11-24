@@ -5,12 +5,36 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import {View, StyleSheet} from "react-native";
 import {useSignalR} from "@/src/hooks/signalR";
 import * as SecureStore from 'expo-secure-store';
+import * as FileSystem from "expo-file-system"
 
 export default function Layout() {
     const {actions} = useSecureStore();
     const {connectAccount} = useSignalR()
     const [loading, setLoading] = useState(true);
 
+    
+    const setReceivingFolder =  (): Promise<boolean> => {
+        return new Promise<boolean>((resolve, reject) => {
+            actions.getStoredFolder().then(async(folder) => {
+                if(folder == null) {
+                    const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+
+                    if (!permissions.granted) {
+                        console.log('Permissão negada pelo usuário.');
+                        resolve(false);
+                        return null;
+                    }
+
+                    const directoryUri = permissions.directoryUri;
+                    actions.setFolder(directoryUri)
+                    resolve(true);
+                    return;
+                }
+                
+                resolve(true)
+            })
+        })
+    }
 
     useEffect(() => {
         // SecureStore.deleteItemAsync("idDevice")
@@ -21,10 +45,17 @@ export default function Layout() {
                 return;
             }
 
-            connectAccount()
+            setReceivingFolder().then((result) => {
+                if(!result){
+                    //TODO popup de erro
+                    return;
+                }
 
-            setLoading(false);
-            actions.setToken(token);
+                connectAccount()
+
+                setLoading(false);
+                actions.setToken(token);
+            })
         });
     }, []);
 
