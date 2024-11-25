@@ -1,10 +1,7 @@
 import * as FileSystem from "expo-file-system"
 import {getTransfer, getTransferChunks} from "@/src/api/transfer.service";
 import {TransferenceType} from "@/src/models/types/entities/TransferenceType";
-import {useSecureStore} from "@/src/providers/SecureStoreProvider";
 import * as SecureStore from "expo-secure-store";
-import {SecureStoreType} from "@/src/models/types/SecureStoreType";
-import Tr from "react-native-paper-dates/src/translations/tr";
 
 type TimerMap = { [idTransfer: number]: NodeJS.Timeout };
 
@@ -48,11 +45,11 @@ export const assembleFile = async (
         const sortedChunks = chunks.sort((a, b) => a.startByteIndex - b.startByteIndex);
 
         let destinationPath = ""
-        
+
         console.log(JSON.stringify(transference))
-        
+
         const receivingFolder = await getStoredFolder()
-        
+
         if(!receivingFolder){
             return ;
         }
@@ -62,27 +59,33 @@ export const assembleFile = async (
         } else {
             destinationPath = `${receivingFolder}/${transference.destinationPath}`;
         }
-        
+
         const outputFilePath = `${destinationPath}/${transference.fileNameExtension}`;
-        
+
         console.log("passou do makeDirecktioongliuerhg")
-        
+
         const fileName = transference.fileNameExtension.split(".")
 
-        await FileSystem.StorageAccessFramework.createFileAsync(destinationPath, transference.fileNameExtension.replace(`.${fileName[fileName.length-1]}`, ''), fileName[fileName.length-1]);
+        // await FileSystem.StorageAccessFramework.createFileAsync(destinationPath, transference.fileNameExtension.replace(`.${fileName[fileName.length-1]}`, ''), fileName[fileName.length-1]);
 
-        for (const chunk of sortedChunks) {
-            const chunkContent = await FileSystem.readAsStringAsync(chunk.filePath, {
-                encoding: FileSystem.EncodingType.Base64,
-            });
-            await FileSystem.StorageAccessFramework.writeAsStringAsync(outputFilePath, chunkContent, {
-                encoding: FileSystem.EncodingType.Base64, //TODO resolver está função para escrever os arquivos corretamente, sem salvar em uma string vazia, escrevre de chunk em chunk, ver RNFS(SAF)
-            });
-        }
+        const chunk = chunks[0]
 
-        for (const chunk of sortedChunks) {
-            await FileSystem.deleteAsync(chunk.filePath);
-        }
+        const content = await FileSystem.readAsStringAsync(chunk.filePath)
+
+        await FileSystem.StorageAccessFramework.writeAsStringAsync(outputFilePath, content)
+
+        // for (const chunk of sortedChunks) {
+        //     const chunkContent = await FileSystem.readAsStringAsync(chunk.filePath, {
+        //         encoding: FileSystem.EncodingType.Base64,
+        //     });
+        //     await FileSystem.StorageAccessFramework.writeAsStringAsync(outputFilePath, chunkContent, {
+        //         encoding: FileSystem.EncodingType.Base64, //TODO resolver está função para escrever os arquivos corretamente, sem salvar em uma string vazia, escrevre de chunk em chunk, ver RNFS(SAF)
+        //     });
+        // }
+
+        // for (const chunk of sortedChunks) {
+        //     await FileSystem.deleteAsync(chunk.filePath);
+        // }
 
         const chunksDirectory = `${FileSystem.documentDirectory}chunks/${transference.idTransference}`;
         await FileSystem.deleteAsync(chunksDirectory);
@@ -128,16 +131,16 @@ export const ReceiveFileChunk = async (
 
         const transference = await getTransfer(idTransfer);
         console.log("Todos os chunks foram recebidos. Combinando o arquivo...");
-        
+
         const chunks = receivedChunks.map((chunk) => ({
             startByteIndex: parseInt(chunk.split(".")[0]),
             filePath: `${chunkDir}/${chunk}`,
         }));
-        
+
         if(!transference.data){
             return;
         }
-        
+
         await assembleFile(transference.data, chunks);
 
     } catch (error) {

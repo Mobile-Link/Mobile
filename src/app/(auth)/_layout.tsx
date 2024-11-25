@@ -12,7 +12,6 @@ export default function Layout() {
     const {connectAccount} = useSignalR()
     const [loading, setLoading] = useState(true);
 
-    
     const setReceivingFolder =  (): Promise<boolean> => {
         return new Promise<boolean>((resolve, reject) => {
             actions.getStoredFolder().then(async(folder) => {
@@ -30,7 +29,6 @@ export default function Layout() {
                     resolve(true);
                     return;
                 }
-                
                 resolve(true)
             })
         })
@@ -38,7 +36,6 @@ export default function Layout() {
 
     useEffect(() => {
         // SecureStore.deleteItemAsync("idDevice")
-        
         actions.getStoredToken().then((token) => {
             if (token == null) {
                 router.replace('/loginScreen');
