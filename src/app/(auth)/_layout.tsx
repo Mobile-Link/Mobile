@@ -15,7 +15,7 @@ export default function Layout() {
     const setReceivingFolder =  (): Promise<boolean> => {
         return new Promise<boolean>((resolve, reject) => {
             actions.getStoredFolder().then(async(folder) => {
-                if(folder == null) {
+                if(!folder) {
                     const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
 
                     if (!permissions.granted) {
@@ -25,6 +25,12 @@ export default function Layout() {
                     }
 
                     const directoryUri = permissions.directoryUri;
+                    
+                    if(!directoryUri || directoryUri.trim() === ""){
+                        resolve(false);
+                        return false
+                    }
+                    
                     actions.setFolder(directoryUri)
                     resolve(true);
                     return;
