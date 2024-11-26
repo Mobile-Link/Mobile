@@ -44,23 +44,13 @@ const DescriptionDeviceScreen = () => {
                     </View>
                 </Card>
                 <Card>
-                    <Text>fkjgnbetithyg</Text>
-                    <Text>fkjgnbetithyg</Text>
-                    <Text>fkjgnbetithyg</Text>
-                    <Text>fkjgnbetithyg</Text>
-                    <Text>fkjgnbetithyg</Text>
-                    <Text>fkjgnbetithyg</Text>
-                    <Text>fkjgnbetithyg</Text>
-                    <Text>fkjgnbetithyg</Text>
-                    <Text>fkjgnbetithyg</Text>
-                    <Text>fkjgnbetithyg</Text>
                 </Card>
                 <Card
                     icon="trash-can-outline"
                     iconStyle={{}}
                     title="Excluir dispositivo"
                     textStyle={{color: "#F44336"}}
-                    cardStyle={{height: "9%"}}
+                    cardStyle={{height: "12%"}}
                     iconColor="#F44336"
                 />
             </ScrollView>

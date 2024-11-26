@@ -7,21 +7,14 @@ import CustomModal from "@/src/components/CustomModal";
 import FilterModal from "@/src/components/FilterModal";
 import { EnStatus } from "@/src/models/types/enums/EnStatus";
 import {useNavigation} from "@react-navigation/native";
-
-interface MockTransfersProps {
-    id: number;
-    name: string;
-    date: string;
-    status: string;
-    action: EnStatus;
-    percentage?: number;
-}
+import {getTransfers} from "@/src/api/transfer.service";
+import {TransferenceType} from "@/src/models/types/entities/TransferenceType";
 
 const HistoryScreen = () => {
-    const [transfers, setTransfers] = useState<MockTransfersProps[]>([]);
-    const [filteredTransfers, setFilteredTransfers] = useState<MockTransfersProps[]>([]);
+    const [transfers, setTransfers] = useState<TransferenceType[]>([]);
+    const [filteredTransfers, setFilteredTransfers] = useState<TransferenceType[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
-    const [selectedTransfer, setSelectedTransfer] = useState<{ label: string; value: string }[]>([]);
+    const [selectedTransfer, setSelectedTransfer] = useState<{ label: string; value: any }[]>([]);
     const [filterModalVisible, setFilterModalVisible] = useState(false);
     const [filters, setFilters] = useState({
         dateRange: { startDate: "", endDate: "" },
@@ -30,30 +23,19 @@ const HistoryScreen = () => {
     const navigation = useNavigation();
 
     useEffect(() => {
-        const mockTransfers: MockTransfersProps[] = [
-            { id: 1, name: "Nome_do_Arquivo.TXT", date: "19/11/2024", status: "success", action: EnStatus.Finished },
-            { id: 2, name: "Nome_do_Arquivo.JPG", date: "18/11/2024", status: "progress", action: EnStatus.In_cloud, percentage: 0 },
-            { id: 3, name: "Nome_do_Arquivo.PNG", date: "17/11/2024", status: "error", action: EnStatus.Error },
-        ];
-        setTransfers(mockTransfers);
-        setFilteredTransfers(mockTransfers);
-
-        const interval = setInterval(() => {
-            setTransfers((prevTransfers) =>
-                prevTransfers.map((transfer) => {
-                    if (transfer.status === "progress" && transfer.percentage !== undefined) {
-                        const updatedPercentage = transfer.percentage + 1;
-                        if (updatedPercentage >= 100) {
-                            return { ...transfer, status: "success", percentage: 100 };
-                        }
-                        return { ...transfer, percentage: updatedPercentage };
-                    }
-                    return transfer;
-                })
-            );
-        }, 600);
-
-        return () => clearInterval(interval);
+        
+        
+        getTransfers().then((response) => {
+            response.data.map((transfers) => {
+                transfers.updateDate = new Date(transfers.updateDate);
+            });
+            
+            
+            console.log(response.data.length, "ihybgofbgrb")
+            setTransfers(response.data);
+            setFilteredTransfers(response.data);
+        });
+        
     }, []);
 
     const applyFilters = (newFilters: {
@@ -64,7 +46,7 @@ const HistoryScreen = () => {
 
         if (newFilters.dateRange.startDate && newFilters.dateRange.endDate) {
             results = results.filter((transfer) => {
-                const transferDate = new Date(transfer.date.split("/").reverse().join("-"));
+                const transferDate = new Date(transfer.updateDate);
                 const startDate = new Date(newFilters.dateRange.startDate);
                 const endDate = new Date(newFilters.dateRange.endDate);
                 return transferDate >= startDate && transferDate <= endDate;
@@ -73,7 +55,7 @@ const HistoryScreen = () => {
 
         if (newFilters.actions.length > 0) {
             results = results.filter((transfer) =>
-                newFilters.actions.includes(transfer.action)
+                newFilters.actions.includes(transfer.enStatus)
             );
         }
 
@@ -88,17 +70,21 @@ const HistoryScreen = () => {
 
     }, []);
 
-    const handleCardPress = (transfer: MockTransfersProps) => {
+    const handleCardPress = (transfer: TransferenceType) => {
         setSelectedTransfer([
-            { label: "Tipo do Arquivo", value: "Arquivo de Texto (.txt)" },
-            { label: "Local", value: "C:\\Users\\Nome\\Download" },
-            { label: "Tamanho do Arquivo", value: "735 KB (735.000 bytes)" },
-            { label: "Enviado em", value: "segunda-feira, 12 de agosto de 2024, 21:26:54" },
-            { label: "Acessado em", value: "terça-feira, 6 de agosto de 2024, 14:47:02" },
-            { label: "Remetente", value: "Mobile 2" },
-            { label: "Status", value: "Transferência realizada" },
+            { label: "Tipo do Arquivo", value: transfer.fileNameExtension },
+            { label: "Local", value: transfer.filePath },
+            { label: "Tamanho do Arquivo", value: formatFileSize(transfer.size) },
+            { label: "Enviado em", value: transfer.updateDate.toLocaleString("pt-BR") },
+            { label: "Status", value: EnStatus[transfer.enStatus] },
         ]);
         setModalVisible(true);
+    };
+
+    const formatFileSize = (sizeInBytes: number): string => {
+        if (sizeInBytes === 0) return "0 MB";
+        const sizeInMB = sizeInBytes / (1024 * 1024);
+        return `${sizeInMB.toFixed(2)} MB`;
     };
 
     return (
@@ -109,14 +95,14 @@ const HistoryScreen = () => {
                         <Text style={styles.noTransfersText}>Nenhum histórico encontrado.</Text>
                     ) : (
                         filteredTransfers.map((transfer) => {
-                            const statusIcon = transfer.status === "success"
+                            const statusIcon = transfer.enStatus === EnStatus.Finished
                                 ? { name: "check", color: "#4CAF50" }
                                 : { name: "close", color: "#EB3223" };
 
                             return (
                                 <Card
-                                    key={transfer.id}
-                                    title={transfer.name}
+                                    key={transfer.idTransference}
+                                    title={transfer.fileNameExtension}
                                     iconRight={statusIcon.name}
                                     iconColorRight={statusIcon.color}
                                     iconRightStyle={{ top: 50, right: 17 }}
@@ -128,7 +114,7 @@ const HistoryScreen = () => {
                                             size={25}
                                             color="#888787"
                                         />
-                                        <Text style={styles.dateFileTranferText}>{transfer.date}</Text>
+                                        <Text style={styles.dateFileTranferText}>{transfer.updateDate.toLocaleString("pt-BR", {dateStyle: "short"})}</Text>
                                     </View>
                                 </Card>
                             );

@@ -99,18 +99,6 @@ const AccessScreen = () => {
                             label: "Sistema Operacional",
                             value: EnDeviceOs[selectedDevice.enDeviceOs],
                         },
-                        {
-                            label: "Sistema Operacional",
-                            value: EnDeviceOs[selectedDevice.enDeviceOs],
-                        },
-                        {
-                            label: "Sistema Operacional",
-                            value: EnDeviceOs[selectedDevice.enDeviceOs],
-                        },
-                        {
-                            label: "Sistema Operacional",
-                            value: EnDeviceOs[selectedDevice.enDeviceOs],
-                        },
                     ]}
                 />
             )}

@@ -57,7 +57,7 @@ export const SignalRProvider = ({children}: { children: React.ReactNode }) => {
                     (idTransfer, startByteIndex, byteArray) => {
                         ReceiveFileChunk(idTransfer, startByteIndex, byteArray).then(() => {
                         })
-                            console.log(`${idTransfer}, ${startByteIndex}, ${byteArray}`)
+                            console.log(`${idTransfer}, ${startByteIndex}, ${byteArray.length}`)
                         
                     }
                     //TODO não está chegando no receiveFileChunk
