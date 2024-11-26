@@ -1,22 +1,64 @@
-import { Tabs, router } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { useSecureStore } from "@/src/providers/SecureStoreProvider";
+import {Tabs, router} from "expo-router";
+import React, {useEffect, useState} from "react";
+import {SecureStoreProvider, useSecureStore} from "@/src/providers/SecureStoreProvider";
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { View, StyleSheet } from "react-native";
+import {View, StyleSheet} from "react-native";
+import {useSignalR} from "@/src/hooks/signalR";
+import * as SecureStore from 'expo-secure-store';
+import * as FileSystem from "expo-file-system"
 
 export default function Layout() {
-    const { actions } = useSecureStore();
+    const {actions} = useSecureStore();
+    const {connectAccount} = useSignalR()
     const [loading, setLoading] = useState(true);
 
+    const setReceivingFolder =  (): Promise<boolean> => {
+        return new Promise<boolean>((resolve, reject) => {
+            actions.getStoredFolder().then(async(folder) => {
+                if(!folder) {
+                    const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+
+                    if (!permissions.granted) {
+                        console.log('Permissão negada pelo usuário.');
+                        resolve(false);
+                        return null;
+                    }
+
+                    const directoryUri = permissions.directoryUri;
+                    
+                    if(!directoryUri || directoryUri.trim() === ""){
+                        resolve(false);
+                        return false
+                    }
+                    
+                    actions.setFolder(directoryUri)
+                    resolve(true);
+                    return;
+                }
+                resolve(true)
+            })
+        })
+    }
+
     useEffect(() => {
+        // SecureStore.deleteItemAsync("idDevice")
         actions.getStoredToken().then((token) => {
             if (token == null) {
                 router.replace('/loginScreen');
                 return;
             }
 
-            setLoading(false);
-            actions.setToken(token);
+            setReceivingFolder().then((result) => {
+                if(!result){
+                    //TODO popup de erro
+                    return;
+                }
+
+                connectAccount()
+
+                setLoading(false);
+                actions.setToken(token);
+            })
         });
     }, []);
 
@@ -27,7 +69,7 @@ export default function Layout() {
                     screenOptions={{
                         tabBarShowLabel: true,
                         tabBarStyle: styles.tabBar,
-                        tabBarLabelStyle: { fontSize: 12 },
+                        tabBarLabelStyle: {fontSize: 12},
                         tabBarActiveTintColor: '#8A2BE2',
                         tabBarInactiveTintColor: '#3A3A3A',
                     }}
@@ -37,8 +79,8 @@ export default function Layout() {
                         options={{
                             headerShown: false,
                             tabBarLabel: 'Início',
-                            tabBarIcon: ({ color, size }) => (
-                                <Ionicons name="home-outline" size={24} color={color} />
+                            tabBarIcon: ({color, size}) => (
+                                <Ionicons name="home-outline" size={24} color={color}/>
                             ),
                         }}
                     />
@@ -48,8 +90,8 @@ export default function Layout() {
                         options={{
                             headerShown: false,
                             tabBarLabel: 'Histórico',
-                            tabBarIcon: ({ color, size }) => (
-                                <Ionicons name="time-outline" size={24} color={color} />
+                            tabBarIcon: ({color, size}) => (
+                                <Ionicons name="time-outline" size={24} color={color}/>
                             ),
                         }}
                     />
@@ -59,9 +101,9 @@ export default function Layout() {
                         options={{
                             headerShown: false,
                             tabBarLabel: 'Transferir',
-                            tabBarIcon: ({ color }) => (
+                            tabBarIcon: ({color}) => (
                                 <View style={styles.centerButton}>
-                                    <Ionicons name="document-outline" size={28} color="white" />
+                                    <Ionicons name="document-outline" size={28} color="white"/>
                                 </View>
                             ),
                         }}
@@ -72,8 +114,8 @@ export default function Layout() {
                         options={{
                             headerShown: false,
                             tabBarLabel: 'Acessos',
-                            tabBarIcon: ({ color, size }) => (
-                                <Ionicons name="clipboard-outline" size={24} color={color} />
+                            tabBarIcon: ({color, size}) => (
+                                <Ionicons name="clipboard-outline" size={24} color={color}/>
                             ),
                         }}
                     />
@@ -83,9 +125,18 @@ export default function Layout() {
                         options={{
                             headerShown: false,
                             tabBarLabel: 'Dispositivos',
-                            tabBarIcon: ({ color, size }) => (
-                                <Ionicons name="desktop-outline" size={24} color={color} />
+                            tabBarIcon: ({color, size}) => (
+                                <Ionicons name="desktop-outline" size={24} color={color}/>
                             ),
+                        }}
+                    />
+
+                    <Tabs.Screen
+                        name="descriptionDevice"
+                        options={{
+                            headerShown: false,
+                            href: null,
+                            tabBarLabel: 'Descrição de Dispostivos',
                         }}
                     />
                 </Tabs>
@@ -120,7 +171,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: -40,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: {width: 0, height: 2},
         shadowOpacity: 0.3,
         shadowRadius: 5,
     },

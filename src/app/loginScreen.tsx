@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import {View, Text, TextInput, TouchableOpacity, StyleSheet, Image} from 'react-native';
 import { router } from "expo-router";
 import { login, validateCredentials } from '../api/auth.service';
 import { useSecureStore } from "@/src/providers/SecureStoreProvider";
@@ -28,8 +28,9 @@ const LoginScreen = () => {
             }
             
             if (idDevice != null) {
-                const response = await login(emailOrUsername, password);
+                const response = await login(emailOrUsername, password, idDevice);
                 actions.setToken(response.data.token);
+                
                 if (response.status === 200) {
                     router.replace('/(auth)/');
                 } else {
@@ -43,10 +44,11 @@ const LoginScreen = () => {
 
     return (
         <View style={styles.container}>
-            {/* Fundo roxo */}
+        
             <View style={styles.purpleBackground} />
-
-            {/* Container branco arredondado */}
+            
+            <Image style={styles.logo} source={require("../../assets/images/logo-branca.png")}/>
+            
             <View style={styles.whiteContainer}>
                 <Text style={styles.title}>Faça seu Login</Text>
 
@@ -68,16 +70,14 @@ const LoginScreen = () => {
 
                 {error && <Text style={styles.errorText}>{error.error}</Text>}
 
-                <TouchableOpacity onPress={() => router.replace('/forgotPasswordScreen')}>
-                    <Text style={styles.forgotPassword}>Esqueceu sua senha? <Text style={styles.linkText}>Clique Aqui</Text></Text>
-                </TouchableOpacity>
+                <Text onPress={() => router.replace('/forgotPasswordScreen')} style={styles.forgotPassword}>Esqueceu sua senha? <Text style={styles.linkText}>Clique Aqui</Text></Text>
+                
 
                 <TouchableOpacity style={styles.loginButton} onPress={submitLogin}>
                     <Text style={styles.loginButtonText}>Entrar</Text>
                 </TouchableOpacity>
             </View>
 
-            {/* Texto "Criar Conta" posicionado no canto inferior direito */}
             <TouchableOpacity style={styles.registerContainer} onPress={() => router.replace('/createAccountScreen')}>
                 <Text style={styles.registerText}>
                     Não possui uma conta? <Text style={styles.linkText}>Criar Conta</Text>
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
         top: 0,
         left: 0,
         right: 0,
-        height: '40%',
+        height: '100%',
         backgroundColor: '#9465CF',
     },
     whiteContainer: {
@@ -106,7 +106,6 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
         padding: 20,
-        marginTop: '50%',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
@@ -164,6 +163,12 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginBottom: 10,
     },
+    logo: {
+        width: 110,
+        height: 110,
+        margin: 43,
+        alignSelf: "center"
+    }
 });
 
 export default LoginScreen;

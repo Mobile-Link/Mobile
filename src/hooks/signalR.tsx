@@ -3,12 +3,14 @@ import {createContext} from 'react';
 import * as signalR from '@microsoft/signalr';
 import {HubConnection} from "@microsoft/signalr";
 import {SignalRProviderType} from "@/src/models/types/SignalRProviderType";
+import * as SecureStore from "expo-secure-store";
+import {ReceiveFileChunk} from "@/src/util/transferenceUtil";
 
-export const SignalRContext = createContext < SignalRProviderType | undefined >(undefined);
+export const SignalRContext = createContext<SignalRProviderType | undefined>(undefined);
 
 export const useSignalR = () => {
     const connection = useContext(SignalRContext);
-    if(!connection){
+    if (!connection) {
         throw new Error("Use signalR inside the provider")
     }
     return connection
@@ -16,92 +18,88 @@ export const useSignalR = () => {
 
 //TODO PEGAR COMO BASE O SOCKETCONNECTION DO DESKTOP E PASSAR IDDEVICE MOCKADO POR ENQUANTO
 
-export const SignalRProvider = ({children}: {children: React.ReactNode}) => {
-    const [connection, setConnection] = useState < HubConnection | undefined > (undefined);
+export const SignalRProvider = ({children}: { children: React.ReactNode }) => {
+    const [connection, setConnection] = useState<HubConnection | undefined>(undefined);
+    const [statusType, setStatusType] = useState('Disconnected');
 
-    const [statusType, setStatusType] = useState ('Disconnected');
-    
-    const storageContent = {
-        IdDevice: '1',
-        Token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZERldmljZSI6IjEiLCJqdGkiOiI5MWFhODA2Ni0xZTJiLTQyYzQtOWY0YS1jNzM2MDg2ZDkwMzYiLCJleHAiOjE3Mjk3NDg1MjAsImlzcyI6Ik1vYmlsZUxpbmsiLCJhdWQiOiJNb2JpbGVMaW5rIn0.Xo2giQhgNR-b_qs5YX8jSvYhPc0fSX2jmwubYo5Dz3Y'
-    };
-        
-    useEffect(() => {
-        if(storageContent.IdDevice){
-            const newConnection = new signalR.HubConnectionBuilder()
-                .withUrl(`http://localhost:5000/connectionhub`,
-                    {accessTokenFactory: () => storageContent.Token}).build();
-            setConnection(newConnection);
-        }        
-
-    }, []);
 
     const connectAccount = () => {
-        
-        console.log('Conectando...'+ connection);
-        
-        if(connection){
-            const connect = async () => {
-                try {
-                    await connection.start();
-                    setStatusType('Connected');
 
-                    connection.on('ReceiveMessage', (userId, message) => {
-                        console.log(`Received ${userId}: ${message}`);
-                    });
+        SecureStore.getItemAsync("token").then(async (token) => {
 
-                    connection.on('UserConnected', (userId, message) => {
-                        console.log(`User ${userId} : ${message}`);
-                    });
+            if (token == null) {
+                return
+            }
 
-                    connection.on('UserDisconnected', (userId, message) => {
-                        console.log(`User ${userId} : ${message}`);
-                    });
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl(`http://201.41.169.132/connectionhub`,
+                    {accessTokenFactory: () => token}).build();
+            setConnection(connection);
 
-                    connection.on(
-                        'ReceiveFileChunk',
-                        (idTransfer, startByteIndex, byteArray) => {
-                            console.log(
-                                `New chunk received ${idTransfer}, ${startByteIndex}, Length: ${byteArray.length}`
-                            );
-                        }
-                    );
+            try {
+                await connection.start();
+                setStatusType('Connected');
 
-                    connection.on(
-                        'ReceiveNewTransference',
-                        (idTransfer, filePath, fileSize) => {
-                            console.log(
-                                `New transfer started ${idTransfer}, ${filePath}, ${fileSize}`
-                            );
-                        }
-                    );
+                connection.on('ReceiveMessage', (userId, message) => {
+                    console.log(`Received ${userId}: ${message}`);
+                });
 
-                    connection.on('FinalizeTransference', (idTransference) => {
-                        console.log(`Transference ${idTransference} finalized`);
-                    });
-                } catch (error) {
-                    setStatusType('Connecting')
-                    console.log("Connection failed: ",error);
-                }
-            };
-            connect();
-        }
+                connection.on('UserConnected', (userId, message) => {
+                    console.log(`User ${userId} : ${message}`);
+                });
+
+                connection.on('UserDisconnected', (userId, message) => {
+                    console.log(`User ${userId} : ${message}`);
+                });
+
+                connection.on(
+                    'ReceiveFileChunk',
+                    (idTransfer, startByteIndex, byteArray) => {
+                        ReceiveFileChunk(idTransfer, startByteIndex, byteArray).then(() => {
+                        })
+                            console.log(`${idTransfer}, ${startByteIndex}, ${byteArray.length}`)
+                        
+                    }
+                    //TODO não está chegando no receiveFileChunk
+                );
+
+                connection.on(
+                    'ReceiveNewTransference',
+                    (idTransfer, filePath, fileSize) => {
+                        console.log(
+                            `New transfer started ${idTransfer}, ${filePath}, ${fileSize}`
+                        );
+                    }
+                );
+                
+                connection.on('ReSendChunks', (idTransfer: number) => {
+                    console.log(`Reviando os chunks da transferência ${idTransfer}`)
+                })
+
+                connection.on('FinalizeTransference', (idTransference) => {
+                    console.log(`Transference ${idTransference} finalized`);
+                });
+            } catch (error) {
+                setStatusType('Connecting')
+                console.log("Connection failed: ", error);
+            }
+        })
     };
 
     useEffect(() => {
-        if (connection){
-            connection.on('Closed', async(error) => {
+        if (connection) {
+            connection.on('Closed', async (error) => {
                 setStatusType('Disconnected');
                 console.log('Connection closed', error);
                 await retryConnection();
             });
         }
     }, [connection]);
-    
+
     const retryConnection = async () => {
         let retries = 3;
-        
-        while(retries > 0){
+
+        while (retries > 0) {
             try {
                 await connection?.start();
                 setStatusType('Connected');
@@ -111,12 +109,12 @@ export const SignalRProvider = ({children}: {children: React.ReactNode}) => {
                 console.log('Connection failed: ', error);
             }
         }
-        
-        if(retries === 0){
+
+        if (retries === 0) {
             setStatusType('Disconnected');
         }
-    };
-    
+    }; //TODO melhorar para reconectar de tempos em tempos
+
     return (
         <SignalRContext.Provider value={{connection, connectAccount}}>
             {children}

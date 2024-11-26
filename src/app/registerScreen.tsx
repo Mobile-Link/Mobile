@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import {View, Text, TextInput, TouchableOpacity, StyleSheet, Image} from "react-native";
 import { register } from "@/src/api/auth.service";
 import { router, useLocalSearchParams } from "expo-router";
 import { useSecureStore } from "@/src/providers/SecureStoreProvider";
@@ -42,6 +42,8 @@ const Register = () => {
     return (
         <View style={styles.container}>
             <View style={styles.purpleBackground} />
+            
+            <Image style={styles.logo} source={require("../../assets/images/logo-branca.png")}/>
 
             <View style={styles.whiteContainer}>
                 <Text style={styles.title}>Crie sua Conta</Text>
@@ -118,7 +120,6 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
         padding: 20,
-        marginTop: '30%',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
@@ -174,6 +175,12 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
+    logo: {
+        width: 110,
+        height: 110,
+        margin: 43,
+        alignSelf: "center"
+    }
 });
 
 export default Register;

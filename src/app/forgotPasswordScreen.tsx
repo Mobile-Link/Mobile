@@ -1,8 +1,8 @@
 import React, {useState} from "react";
-import {View, Text, TextInput, TouchableOpacity, StyleSheet} from "react-native";
+import {View, Text, TextInput, TouchableOpacity, StyleSheet, Image} from "react-native";
 import {sendCode, updatePassword} from "@/src/api/auth.service";
-import {router, useLocalSearchParams} from "expo-router";
-import {Ionicons} from '@expo/vector-icons';
+import {Link, router, useLocalSearchParams} from "expo-router";
+import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons';
 
 type ErrorState = {
     error: string;
@@ -29,6 +29,14 @@ const ForgotPasswordScreen = () => {
     return (
         <View style={styles.container}>
             <View style={styles.purpleBackground}></View>
+            
+            <TouchableOpacity>
+                <Link href={"/"} style={styles.chevronIcon}>
+                    <MaterialCommunityIcons name="chevron-left" size={50}/>
+                </Link>
+            </TouchableOpacity>
+            
+            <Image style={styles.logo} source={require("../../assets/images/logo-branca.png")}/>
 
             <View style={styles.whiteContainer}>
                 <Text style={styles.title}>Esqueceu sua Senha</Text>
@@ -80,7 +88,6 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
         padding: 20,
-        marginTop: '50%',
         alignItems: 'center',
     },
     title: {
@@ -133,6 +140,17 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontSize: 16,
         fontWeight: 'bold',
+    },
+    logo: {
+        width: 110,
+        height: 110,
+        margin: 43,
+        alignSelf: "center"
+    },
+    chevronIcon: {
+        color: '#fff',
+        position: 'absolute',
+        marginTop: 20
     },
 });
 

@@ -1,146 +1,147 @@
-import React, {useState, useEffect} from 'react';
-import {View, Text, StyleSheet, ScrollView} from 'react-native';
-import AccountMenu from "@/src/components/AccountMenu";
+import React, {useEffect, useState} from "react";
+import {ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {useNavigation} from "@react-navigation/native";
 import Card from "@/src/components/DefaultCards";
 import {DeviceType} from "@/src/models/types/entities/DeviceType";
-import {getLastAccess, getUserDevices} from "@/src/api/device.service";
+import {getUserDevices} from "@/src/api/device.service";
 import {EnDeviceOs} from "@/src/models/types/enums/EnDevicesOs";
-
-type DeviceAccessType = {
-    device: DeviceType,
-    lastAccess: Date
-}
+import LayoutAuth from "@/src/components/LayoutAuth";
+import CustomModal from "@/src/components/CustomModal";
+import {MaterialCommunityIcons} from "@expo/vector-icons";
+import getDeviceIcon from "@/src/constants/plataformIcon";
 
 const AccessScreen = () => {
-    const [devices, setDevices] = useState<DeviceAccessType[]>([]);
+    const [devices, setDevices] = useState<DeviceType[]>([]);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedDevice, setSelectedDevice] = useState<DeviceType | null>(null);
+    const navigation = useNavigation();
 
     useEffect(() => {
         getUserDevices()
             .then((response) => {
-                const promisses: Promise<void>[] = []
-                const devices: DeviceAccessType[] = []
+                response.data.map((device) => {
+                    device.lastAccessDate = new Date(device.lastAccessDate);
+                });
 
-                response.data.map((device: DeviceType) => {
-                    
-                    
-                    promisses.push(getLastAccess(device.idDevice).then((response) => {
-                        console.log(response.data)
-                        devices.push({device: device, lastAccess: response.data.date})
-                    }))
-                })
-
-                Promise.all(promisses).then(() => {
-                    setDevices(devices);
-                })
-
+                setDevices(response.data);
             })
             .catch((error) => {
                 console.log(error);
             });
     }, []);
 
+    useEffect(() => {
+        navigation.addListener("blur", () => {
+            setModalVisible(false);
+        });
+        
+    }, []);
 
-    const getDeviceIcon = (os: EnDeviceOs) => {
-        switch (os) {
-            case 1:
-                return 'linux';
-            case 2:
-                return 'microsoft-windows';
-            case 3:
-                return 'android';
-            case 4:
-                return 'apple';
-            case 5:
-                return 'apple-finder';
-            default:
-                return 'help-circle';
-        }
+    const handleCardPress = (device: DeviceType) => {
+        setSelectedDevice(device);
+        setModalVisible(true);
     };
 
     return (
-        <View style={styles.container}>
-            <AccountMenu/>
-            <View style={styles.purpleBackground}/>
-
-            <View style={styles.whiteContainer}>
-                <Text style={styles.title}>Histórico de acessos</Text>
+        <>
+            <LayoutAuth title="Histórico de acessos">
                 <ScrollView showsVerticalScrollIndicator={false}>
                     {devices.length === 0 ? (
                         <Text style={styles.noDevicesText}>Nenhum histórico encontrado.</Text>
                     ) : (
-                        devices.map((device: DeviceAccessType) => (
-                            <Card title={device.device.name} icon={getDeviceIcon(device.device.enDeviceOs)}>
-                                {/*<Text style={styles.content}>Último acesso: {device.lastAccess + ''}</Text>*/} //TODO fazer funcionar a data
+                        devices.map((device: DeviceType) => (
+                            <Card
+                                key={device.idDevice}
+                                title={device.name}
+                                icon={getDeviceIcon(device.enDeviceOs)}
+                                iconRight={"chevron-right"}
+                                onPress={() => handleCardPress(device)}
+                            >
+                                <Text style={styles.content}>
+                                    Último acesso: {device.lastAccessDate.toLocaleString("pt-BR", {dateStyle: "short"})}
+                                </Text>
                             </Card>
                         ))
                     )}
                 </ScrollView>
-            </View>
-        </View>
+
+                <View>
+                    <TouchableOpacity style={styles.bottomSearch}>
+                        <MaterialCommunityIcons
+                            name="magnify"
+                            size={40}
+                            color="#ffffff"
+                        />
+                    </TouchableOpacity>
+                </View>
+                <View>
+                    <TouchableOpacity style={styles.bottomFilter}>
+                        <MaterialCommunityIcons
+                            name="filter-outline"
+                            size={40}
+                            color="#ffffff"
+                        />
+                    </TouchableOpacity>
+                </View>
+            </LayoutAuth>
+
+            {selectedDevice && (
+                <CustomModal
+                    visible={modalVisible}
+                    onClose={() => setModalVisible(false)}
+                    title={selectedDevice.name}
+                    details={[
+                        {
+                            label: "Último acesso",
+                            value: selectedDevice.lastAccessDate.toLocaleString("pt-BR"),
+                        },
+                        {
+                            label: "Sistema Operacional",
+                            value: EnDeviceOs[selectedDevice.enDeviceOs],
+                        },
+                    ]}
+                />
+            )}
+        </>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#FFFFFF',
-    },
-    purpleBackground: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        height: '40%',
-        backgroundColor: '#9465CF',
-    },
-    whiteContainer: {
-        flex: 1,
-        backgroundColor: '#EEEEEE',
-        borderTopLeftRadius: 50,
-        borderTopRightRadius: 50,
-        padding: 20,
-        marginTop: '25%',
-        shadowColor: '#000',
-        shadowOffset: {width: 0, height: 4},
-        shadowOpacity: 0.3,
-        shadowRadius: 10,
-        elevation: 10,
-    },
-    centralSection: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#FFFFFF',
-        borderRadius: 50,
-        padding: 10,
-        width: '100%',
-    },
-    title: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 10,
-        textAlign: 'center',
-    },
-    titleCard: {
-        margin: -5,
-        fontSize: 24,
-        color: '#333',
-        fontWeight: 'bold',
-        textAlign: 'center',
-        right: 285,
-        bottom: 10,
-    },
     noDevicesText: {
         fontSize: 16,
-        fontStyle: 'italic',
-        color: '#888',
+        fontStyle: "italic",
+        color: "#888",
     },
     content: {
         fontSize: 16,
-        color: '#888787',
-        textAlign: 'center',
-        top: 30,
-        right: 300,
+        color: "#888787",
     },
+    bottomFilter:{
+        position: "absolute",
+        alignSelf: "flex-end",
+        backgroundColor: "#9465CF",
+        padding: 8,
+        borderRadius: 30,
+        bottom: 1,
+        shadowColor: '#000',
+        shadowOffset: {width: 0, height: 4},
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 5,
+    },
+    bottomSearch:{
+        position: "absolute",
+        alignSelf: "flex-end",
+        backgroundColor: "#9465CF",
+        padding: 8,
+        borderRadius: 30,
+        bottom: 70,
+        shadowColor: '#000',
+        shadowOffset: {width: 0, height: 4},
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 5,
+    }
 });
 
 export default AccessScreen;

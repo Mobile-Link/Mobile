@@ -8,6 +8,9 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/src/hooks/useColorScheme';
 import { SignalRProvider } from '@/src/hooks/signalR';
 import { SecureStoreProvider } from '@/src/providers/SecureStoreProvider';
+import {registerTranslation, pt} from "react-native-paper-dates";
+
+registerTranslation("pt", pt)
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();

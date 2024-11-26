@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { TextInput, View, Text, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
+import {TextInput, View, Text, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Image} from "react-native";
 import { loginCreateDevice } from "@/src/api/auth.service";
 import { router, useLocalSearchParams } from "expo-router";
 import { useSecureStore } from "@/src/providers/SecureStoreProvider";
+import {EnDeviceOs} from "@/src/models/types/enums/EnDevicesOs";
 
 type ErrorState = {
     error: string;
@@ -32,14 +33,13 @@ const LoginCreateDeviceScreen = () => {
 
     return (
         <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
-            {/* Fundo roxo */}
             <View style={styles.purpleBackground} />
+            
+            <Image style={styles.logo} source={require("../../assets/images/logo-branca.png")}/>
 
-            {/* Contêiner branco arredondado */}
             <View style={styles.whiteContainer}>
                 <Text style={styles.title}>Nomeie seu dispositivo</Text>
 
-                {/* Input para nome do dispositivo */}
                 <Text style={styles.label}>Nome do Dispositivo</Text>
                 <TextInput
                     style={styles.input}
@@ -49,7 +49,6 @@ const LoginCreateDeviceScreen = () => {
 
                 {error && <Text style={styles.errorText}>{error.error}</Text>}
 
-                {/* Botão Entrar */}
                 <TouchableOpacity style={styles.enterButton} onPress={submitLoginCreateDevice}>
                     <Text style={styles.enterButtonText}>Entrar</Text>
                 </TouchableOpacity>
@@ -77,7 +76,6 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
         padding: 20,
-        marginTop: '50%',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
@@ -126,6 +124,12 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
+    logo: {
+        width: 110,
+        height: 110,
+        margin: 43,
+        alignSelf: "center"
+    }
 });
 
 export default LoginCreateDeviceScreen;

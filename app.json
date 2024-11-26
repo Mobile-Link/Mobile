@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "MobileLink-App",
+    "name": "MobileLink",
     "slug": "MobileLink-App",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#9465CF"
     },
     "ios": {
       "supportsTablet": true
@@ -34,6 +34,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "91d25a83-7461-4362-9f78-6758c208c600"
+      }
     }
   }
 }

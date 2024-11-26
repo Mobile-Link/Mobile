@@ -13,4 +13,5 @@ export type DeviceType = {
     creationDate: Date;
     alterationDate: Date;
     enDeviceOs: EnDeviceOs;
+    lastAccessDate: Date;
 }

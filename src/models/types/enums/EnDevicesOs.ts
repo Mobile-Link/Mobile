@@ -1,7 +1,8 @@
 export enum EnDeviceOs {
-    Linux = 1,
+    Linux ,
     Windows ,
     Android,
     IOS,
-    MacOS
+    MacOS,
+    Unknown
 }
