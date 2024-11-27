@@ -3,6 +3,7 @@ import * as SecureStore from "expo-secure-store";
 import {TransferenceType} from "@/src/models/types/entities/TransferenceType";
 import {finishTransfer, getTransfer, getTransferChunks} from "@/src/api/transfer.service";
 import {getMimeTypeFromExtension} from "@/src/util/getMimeTypeFromExtension";
+import { showMessage } from "react-native-flash-message";
 
 type TimerMap = { [idTransfer: number]: NodeJS.Timeout };
 const activeTimers: TimerMap = {};
@@ -165,11 +166,25 @@ export const assembleFile = async (
 
         console.log(`Arquivo combinado salvo em: ${outputFileUri}`);
 
-        finishTransfer(transference.idTransference).then(() => {});
-        
+        showMessage({
+            message: "Arquivo recebido!",
+            description: `O arquivo "${transference.fileNameExtension}" foi salvo com sucesso.`,
+            type: "success",
+            backgroundColor: "#4CAF50",
+            duration: 2000,
+        });
+
+        await finishTransfer(transference.idTransference);
         return outputFileUri;
     } catch (error) {
         console.error(`Erro ao montar o arquivo: ${error}`);
+
+        showMessage({
+            message: "Erro ao processar arquivo",
+            description: "Ocorreu um problema ao combinar os chunks recebidos.",
+            type: "danger",
+        });
+
         throw error;
     } finally {
         releaseSemaphore(transference.idTransference);
@@ -229,6 +244,13 @@ export const ReceiveFileChunk = async (
 
     } catch (error) {
         console.error(`Erro ao receber o chunk: ${error}`);
+
+        showMessage({
+            message: "Erro no recebimento",
+            description: "Houve um problema ao receber os dados do arquivo.",
+            type: "danger",
+        });
+
         throw error;
     }
 };

@@ -7,7 +7,7 @@ import {
     TouchableWithoutFeedback,
     FlatList,
     ViewStyle,
-    StyleProp
+    StyleProp,
 } from 'react-native';
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {getUserDevices} from "@/src/api/device.service";
@@ -28,19 +28,22 @@ interface SelectDeviceProps {
     menuStyle?: StyleProp<ViewStyle>;
     containerStyle?: StyleProp<ViewStyle>;
     onDeviceSelect?: (device: DeviceActive) => void;
+    clearDeviceSelection?: () => void;
 }
 
 const SelectDevice = ({
                           iconName,
-                          iconSize,
-                          iconColor,
+                          iconSize = 100,
+                          iconColor = "#D1B3FF",
                           menuStyle,
                           containerStyle,
                           onDeviceSelect,
-                          title
+                          title,
+                          clearDeviceSelection,
                       }: SelectDeviceProps) => {
     const [isMenuVisible, setIsMenuVisible] = useState(false);
     const [devices, setDevices] = useState<DeviceActive[]>([]);
+    const [selectedDevice, setSelectedDevice] = useState<DeviceActive | null>(null);
     const navigation = useNavigation();
 
     const populateDevices = (connectedDevices: number[]) => {
@@ -61,23 +64,26 @@ const SelectDevice = ({
             .catch((error) => console.error("Erro ao carregar dispositivos conectados:", error));
     };
 
-//TODO tirar busca de devices daqui, e passar como prop na tela    
-    
     const toggleMenu = () => {
         if (!isMenuVisible) loadDevices();
         setIsMenuVisible(!isMenuVisible);
     };
 
     const handleDeviceSelect = (device: DeviceActive) => {
+        setSelectedDevice(device); // Define o dispositivo selecionado
         setIsMenuVisible(false);
         if (onDeviceSelect) onDeviceSelect(device);
+    };
+
+    const handleClearDeviceSelection = () => {
+        setSelectedDevice(null);
+        if (clearDeviceSelection) clearDeviceSelection();  // Chama a função para limpar no componente pai
     };
 
     useEffect(() => {
         navigation.addListener("blur", () => {
             setIsMenuVisible(false);
         });
-
     }, []);
 
     return (
@@ -89,12 +95,30 @@ const SelectDevice = ({
                             e.stopPropagation();
                             toggleMenu();
                         }}
+                        style={styles.iconContainer}
                     >
                         <MaterialCommunityIcons
                             name={iconName}
                             size={iconSize}
                             color={iconColor}
                         />
+                        {selectedDevice && (
+                            <Text
+                                style={{
+                                    position: 'absolute',
+                                    top: iconSize / 3,
+                                    width: iconSize,
+                                    textAlign: 'center',
+                                    fontSize: iconSize * 0.15,
+                                    fontWeight: 'bold',
+                                    color: '#9465CF',
+                                }}
+                                numberOfLines={1}
+                                ellipsizeMode="tail"
+                            >
+                                {selectedDevice.name}
+                            </Text>
+                        )}
                     </TouchableOpacity>
                 </View>
             </TouchableWithoutFeedback>
@@ -128,7 +152,6 @@ const SelectDevice = ({
                     </View>
                 </TouchableWithoutFeedback>
             )}
-        
         </>
     );
 };
@@ -136,6 +159,10 @@ const SelectDevice = ({
 const styles = StyleSheet.create({
     container: {
         zIndex: 10,
+    },
+    iconContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     menu: {
         position: 'absolute',
@@ -145,7 +172,7 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 10,
         shadowColor: '#000',
-        shadowOffset: {width: 0, height: 4},
+        shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
         shadowRadius: 10,
         elevation: 15,
@@ -160,7 +187,7 @@ const styles = StyleSheet.create({
         borderColor: "#8A2BE2",
         borderWidth: 2,
         borderRadius: 10,
-        marginBottom: 5
+        marginBottom: 5,
     },
     menuItem: {
         fontSize: 16,
@@ -180,8 +207,8 @@ const styles = StyleSheet.create({
         borderBottomColor: '#8A2BE2',
         borderBottomWidth: 2,
         width: "60%",
-        alignSelf: "center"
-    }
+        alignSelf: "center",
+    },
 });
 
 export default SelectDevice;

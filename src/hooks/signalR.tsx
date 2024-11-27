@@ -32,7 +32,7 @@ export const SignalRProvider = ({children}: { children: React.ReactNode }) => {
             }
 
             const connection = new signalR.HubConnectionBuilder()
-                .withUrl(`http://201.41.169.132/connectionhub`,
+                .withUrl(`http://localhost:5000/connectionhub`,
                     {accessTokenFactory: () => token}).build();
             setConnection(connection);
 

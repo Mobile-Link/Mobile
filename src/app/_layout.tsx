@@ -9,6 +9,7 @@ import { useColorScheme } from '@/src/hooks/useColorScheme';
 import { SignalRProvider } from '@/src/hooks/signalR';
 import { SecureStoreProvider } from '@/src/providers/SecureStoreProvider';
 import {registerTranslation, pt} from "react-native-paper-dates";
+import FlashMessage from "react-native-flash-message";
 
 registerTranslation("pt", pt)
 
@@ -32,6 +33,7 @@ export default function RootLayout() {
         <SecureStoreProvider>
             <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
                 <Slot/>
+                <FlashMessage position="top"/>
             </ThemeProvider>
         </SecureStoreProvider>
     </SignalRProvider>
